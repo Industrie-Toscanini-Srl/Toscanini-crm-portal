@@ -109,6 +109,21 @@
         @media(max-width:768px){.header-content{flex-direction:column;gap:12px}.leads-table th:nth-child(3),.leads-table td:nth-child(3),.leads-table th:nth-child(4),.leads-table td:nth-child(4){display:none}.login-box{margin:20px;padding:30px}.tabs{flex-direction:column}.action-buttons{flex-direction:column}}
         .empty-state{text-align:center;padding:60px 20px;color:var(--text-light)}
         .empty-state .icon{font-size:3rem;margin-bottom:16px;opacity:0.5}
+        /* Recording Toggle Styles */
+        .recording-section{margin-top:20px;padding:20px;background:var(--bg-light);border-radius:8px;border:1px solid var(--border)}
+        .recording-toggle{display:flex;align-items:center;justify-content:space-between;gap:16px}
+        .recording-label{display:flex;align-items:center;gap:10px;font-size:0.9rem;color:var(--text-dark)}
+        .recording-label .mic-icon{font-size:1.3rem}
+        .toggle-switch{position:relative;width:56px;height:30px;background:var(--border);border-radius:15px;cursor:pointer;transition:all 0.3s}
+        .toggle-switch.active{background:var(--danger)}
+        .toggle-switch::after{content:'';position:absolute;width:24px;height:24px;background:var(--white);border-radius:50%;top:3px;left:3px;transition:all 0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
+        .toggle-switch.active::after{left:29px}
+        .recording-status{font-size:0.8rem;color:var(--text-light);margin-top:12px;display:flex;align-items:center;gap:8px}
+        .recording-status.active{color:var(--danger);font-weight:500}
+        .recording-dot{width:10px;height:10px;background:var(--danger);border-radius:50%;animation:pulse 1.5s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+        .recording-time{font-family:monospace;font-size:1rem}
+        .transcription-loading{display:flex;align-items:center;gap:10px;padding:15px;background:#FFF8E1;border-radius:8px;margin-top:12px;font-size:0.85rem;color:#F9A825}
     </style>
 </head>
 <body>
@@ -180,7 +195,27 @@
                             <div class="form-group"><label>Nazione</label><input type="text" id="fieldNazione" placeholder="Nazione"></div>
                             <div class="form-group"><label>Lingua</label><select id="fieldLingua"><option value="italiano">Italiano</option><option value="english">English</option><option value="français">Français</option><option value="español">Español</option><option value="deutsch">Deutsch</option></select></div>
                         </div>
-                        <div class="form-group"><label>Note Commerciale</label><textarea id="fieldNote" placeholder="Inserisci note..."></textarea></div>
+                        <!-- Recording Section -->
+                        <div class="recording-section">
+                            <div class="recording-toggle">
+                                <div class="recording-label">
+                                    <span class="mic-icon">🎤</span>
+                                    <span>Registra conversazione</span>
+                                </div>
+                                <div class="toggle-switch" id="recordingToggle"></div>
+                            </div>
+                            <div class="recording-status" id="recordingStatus">
+                                <span>Tocca per avviare la registrazione</span>
+                            </div>
+                            <div class="transcription-loading" id="transcriptionLoading" style="display:none;">
+                                <div class="spinner" style="width:20px;height:20px;margin:0;border-width:2px;"></div>
+                                <span>Trascrizione e riassunto in corso...</span>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top:18px;">
+                            <label>Note Commerciale</label>
+                            <textarea id="fieldNote" placeholder="Inserisci note o usa la registrazione vocale..."></textarea>
+                        </div>
                     </div>
                 </div>
                 <div class="card">
@@ -240,7 +275,9 @@
     <script>
 const API_BASE='https://giotosca.app.n8n.cloud/webhook';
 let currentUser=null,currentLeadData=null,currentRowNumber=null,videoStream=null,currentEmailHtml='';
+let mediaRecorder=null,audioChunks=[],isRecording=false,recordingStartTime=null,recordingTimer=null;
 const commercialiNames={'marina_agliaudi':'Marina Agliaudi','federica':'Federica Toscanini','benedetta_giardino':'Benedetta Giardino','marina_raimondi':'Marina Raimondi','alessandra_spruzzola':'Alessandra Spruzzola','simona_giuppone':'Simona Giuppone'};
+
 document.addEventListener('DOMContentLoaded',()=>{
     const saved=localStorage.getItem('toscanini_user');
     if(saved){currentUser=saved;showDashboard()}
@@ -260,6 +297,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         document.getElementById('btnEditToggle').textContent=section.classList.contains('visible')?'✕ Chiudi modifica':'✏️ Modifica testo email';
     });
     document.getElementById('btnUpdatePreview').addEventListener('click',updatePreviewFromText);
+    document.getElementById('recordingToggle').addEventListener('click',toggleRecording);
     document.querySelectorAll('.allegato-item').forEach(item=>{
         item.addEventListener('click',e=>{
             if(e.target.type!=='checkbox'){const cb=item.querySelector('input');cb.checked=!cb.checked}
@@ -267,19 +305,106 @@ document.addEventListener('DOMContentLoaded',()=>{
         });
     });
 });
+
 function login(){currentUser=document.getElementById('commercialeSelect').value;localStorage.setItem('toscanini_user',currentUser);showDashboard()}
-function logout(){currentUser=null;localStorage.removeItem('toscanini_user');document.getElementById('loginScreen').style.display='flex';document.getElementById('mainHeader').style.display='none';document.getElementById('dashboard').classList.remove('active');stopCamera()}
+function logout(){currentUser=null;localStorage.removeItem('toscanini_user');document.getElementById('loginScreen').style.display='flex';document.getElementById('mainHeader').style.display='none';document.getElementById('dashboard').classList.remove('active');stopCamera();stopRecording()}
 function showDashboard(){document.getElementById('loginScreen').style.display='none';document.getElementById('mainHeader').style.display='block';document.getElementById('dashboard').classList.add('active');document.getElementById('userName').textContent=commercialiNames[currentUser]||currentUser;loadLeads()}
 function switchTab(tabId){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tabId));document.querySelectorAll('.tab-content').forEach(tc=>tc.classList.toggle('active',tc.id==='tab'+tabId.charAt(0).toUpperCase()+tabId.slice(1)));if(tabId==='leadList')loadLeads()}
+
+// Camera functions
 async function startCamera(){try{videoStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});document.getElementById('videoElement').srcObject=videoStream;document.getElementById('videoElement').style.display='block';document.getElementById('cameraPlaceholder').style.display='none';document.getElementById('capturedImage').style.display='none';document.getElementById('btnCapture').disabled=false;document.getElementById('btnStartCamera').textContent='🔄 Cambia'}catch(e){document.getElementById('fileInput').click()}}
 function stopCamera(){if(videoStream){videoStream.getTracks().forEach(t=>t.stop());videoStream=null}document.getElementById('videoElement').style.display='none';document.getElementById('btnCapture').disabled=true}
 function capturePhoto(){const canvas=document.getElementById('canvas'),video=document.getElementById('videoElement');canvas.width=video.videoWidth;canvas.height=video.videoHeight;canvas.getContext('2d').drawImage(video,0,0);const img=canvas.toDataURL('image/jpeg',0.8);showCapturedImage(img);processImage(img.split(',')[1])}
 function handleFileSelect(e){const file=e.target.files[0];if(file){const reader=new FileReader();reader.onload=ev=>{showCapturedImage(ev.target.result);processImage(ev.target.result.split(',')[1])};reader.readAsDataURL(file)}}
 function showCapturedImage(src){stopCamera();document.getElementById('capturedImage').src=src;document.getElementById('capturedImage').style.display='block';document.getElementById('cameraPlaceholder').style.display='none';document.getElementById('btnStartCamera').textContent='📷 Nuova Foto'}
+
+// Recording functions
+async function toggleRecording(){
+    const toggle=document.getElementById('recordingToggle');
+    const status=document.getElementById('recordingStatus');
+    if(!isRecording){
+        try{
+            const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+            mediaRecorder=new MediaRecorder(stream);
+            audioChunks=[];
+            mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data)};
+            mediaRecorder.onstop=processAudio;
+            mediaRecorder.start();
+            isRecording=true;
+            recordingStartTime=Date.now();
+            toggle.classList.add('active');
+            status.classList.add('active');
+            updateRecordingTime();
+            recordingTimer=setInterval(updateRecordingTime,1000);
+            showToast('Registrazione avviata','info');
+        }catch(e){
+            showToast('Errore accesso microfono','error');
+            console.error(e);
+        }
+    }else{
+        stopRecording();
+    }
+}
+
+function stopRecording(){
+    if(mediaRecorder&&isRecording){
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(t=>t.stop());
+        isRecording=false;
+        clearInterval(recordingTimer);
+        document.getElementById('recordingToggle').classList.remove('active');
+        document.getElementById('recordingStatus').classList.remove('active');
+        document.getElementById('recordingStatus').innerHTML='<span>Tocca per avviare la registrazione</span>';
+    }
+}
+
+function updateRecordingTime(){
+    const elapsed=Math.floor((Date.now()-recordingStartTime)/1000);
+    const min=Math.floor(elapsed/60).toString().padStart(2,'0');
+    const sec=(elapsed%60).toString().padStart(2,'0');
+    document.getElementById('recordingStatus').innerHTML=`<span class="recording-dot"></span><span class="recording-time">${min}:${sec}</span><span>Registrazione in corso...</span>`;
+}
+
+async function processAudio(){
+    const audioBlob=new Blob(audioChunks,{type:'audio/webm'});
+    document.getElementById('transcriptionLoading').style.display='flex';
+    showToast('Elaborazione audio...','info');
+    try{
+        const base64=await blobToBase64(audioBlob);
+        const response=await fetch(API_BASE+'/trascrivi-audio',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({audio:base64,commerciale:currentUser})
+        });
+        if(!response.ok)throw new Error('Errore trascrizione');
+        const data=await response.json();
+        const noteField=document.getElementById('fieldNote');
+        noteField.value=(noteField.value?noteField.value+'\n\n':'')+data.riassunto;
+        showToast('Trascrizione completata!','success');
+    }catch(e){
+        console.error(e);
+        showToast('Errore nella trascrizione','error');
+    }finally{
+        document.getElementById('transcriptionLoading').style.display='none';
+    }
+}
+
+function blobToBase64(blob){
+    return new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+        reader.onloadend=()=>resolve(reader.result.split(',')[1]);
+        reader.onerror=reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
+// Image processing
 async function processImage(base64){showToast('Elaborazione...','info');try{const r=await fetch(API_BASE+'/upload-biglietto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:base64,commerciale:currentUser,allegatiSelezionati:getSelectedAllegati()})});if(!r.ok)throw new Error();const d=await r.json();currentLeadData=d;currentRowNumber=d.row_number;document.getElementById('fieldNome').value=d.nome||'';document.getElementById('fieldCognome').value=d.cognome||'';document.getElementById('fieldEmail').value=d.email||'';document.getElementById('fieldTelefono').value=d.telefono||'';document.getElementById('fieldAzienda').value=d.azienda||'';document.getElementById('fieldRuolo').value=d.ruolo||'';document.getElementById('fieldIndirizzo').value=d.indirizzo||'';document.getElementById('fieldNazione').value=d.nazione||'';document.getElementById('fieldLingua').value=d.lingua||'italiano';if(d.emailGenerata){currentEmailHtml=d.emailGenerata;document.getElementById('emailPreview').innerHTML=d.emailGenerata;document.getElementById('emailEditText').value=htmlToPlainText(d.emailGenerata);document.getElementById('emailPreviewBox').style.display='block'}showToast('Dati estratti!','success')}catch(e){showToast('Errore. Compila manualmente.','error')}}
+
 function htmlToPlainText(html){const tmp=document.createElement('div');tmp.innerHTML=html;const links=tmp.querySelectorAll('a');links.forEach(a=>{a.textContent=a.textContent+' ('+a.href+')';});return tmp.textContent||tmp.innerText||'';}
 function plainTextToHtml(text,lang){const lines=text.split('\n').filter(l=>l.trim());let html='<div style="font-family:Arial;max-width:600px;color:#333;">';lines.forEach(line=>{if(line.trim())html+='<p>'+line.replace(/\(https?:\/\/[^\)]+\)/g,match=>{const url=match.slice(1,-1);return '<a href="'+url+'" style="color:#3AAFA9;">'+url+'</a>';})+'</p>';});html+='<img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/FIRMA_MIAMI_03_LOW2.jpg" style="max-width:400px;margin-top:20px;"></div>';return html;}
 function updatePreviewFromText(){const text=document.getElementById('emailEditText').value;const lang=document.getElementById('fieldLingua').value;currentEmailHtml=plainTextToHtml(text,lang);document.getElementById('emailPreview').innerHTML=currentEmailHtml;showToast('Anteprima aggiornata','success');}
+
 function generateEmail(){const lang=document.getElementById('fieldLingua').value,nome=document.getElementById('fieldNome').value,cognome=document.getElementById('fieldCognome').value,allegati=getSelectedAllegati();const urls={'interior_catalog':{n:'Catalogo Interior 2024',u:'https://storage.toscanini.it/toscanini_interior_catalog_2024_sept.pdf'},'interior_listino':{n:'Listino Interior 2025',u:'https://storage.toscanini.it/listino-interior-2025-rev2.pdf'},'interior_novita':{n:'Novità Interior 2025',u:'https://storage.toscanini.it/listino-interior-2025-new-collection-rev1.pdf'},'lingerie_catalog':{n:'Catalogo Lingerie 2021',u:'https://www.toscanini.it/PDF/lingerie.pdf'},'hotellerie_catalog':{n:'Catalogo Hotellerie 2022',u:'https://storage.toscanini.it/TOSCANINI_HOTELLERIE2022.pdf'},'hotellerie_listino':{n:'Listino Hotellerie 2023',u:'https://storage.toscanini.it/Hotellerie_Jan2023.pdf'},'generale_catalog':{n:'Catalogo Generale 2024',u:'https://storage.toscanini.it/Catalogo-Generale-Toscanini_2024.pdf'},'inspiration':{n:'Inspiration Book',u:'http://www.toscanini.it/PDF/INSPIRATIONS_06.pdf'},'centenario_libro':{n:'Libro Centenario',u:'http://www.toscanini.it/PDF/Libro_Centenario_Toscanini.pdf'},'centenario_video_ita':{n:'Video Centenario ITA',u:'http://www.toscanini.it/PDF/Toscanini-100.mp4'},'centenario_video_eng':{n:'Video Centenario ENG',u:'https://youtu.be/5Jl6-ZQ3kjw'}};
 let ah='';if(allegati.length){ah=(lang==='italiano'?'<p><b>Documentazione:</b></p>':'<p><b>Documentation:</b></p>')+'<ul style="margin:10px 0 20px 20px;">';allegati.forEach(k=>{if(urls[k])ah+='<li style="margin:5px 0;"><a href="'+urls[k].u+'" style="color:#3AAFA9;">'+urls[k].n+'</a></li>'});ah+='</ul>'}
 const html=lang==='italiano'?'<div style="font-family:Arial;max-width:600px;color:#333;"><p>Gentile '+nome+' '+cognome+',</p><p>È stato un piacere incontrarLa e presentarLe le nostre collezioni.</p><p>Come discusso, Le invio la documentazione:</p>'+ah+'<p>Rimango a disposizione.</p><p>Instagram: <a href="https://www.instagram.com/toscanini_official/" style="color:#3AAFA9;">@toscanini_official</a></p><p>Cordiali saluti,</p><p><b>Industrie Toscanini S.r.l.</b><br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p><img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/FIRMA_MIAMI_03_LOW2.jpg" style="max-width:400px;margin-top:20px;"></div>':'<div style="font-family:Arial;max-width:600px;color:#333;"><p>Dear '+nome+' '+cognome+',</p><p>It was a pleasure meeting you and presenting our collections.</p><p>As discussed, please find the documentation:</p>'+ah+'<p>Don\'t hesitate to contact me.</p><p>Instagram: <a href="https://www.instagram.com/toscanini_official/" style="color:#3AAFA9;">@toscanini_official</a></p><p>Best regards,</p><p><b>Industrie Toscanini S.r.l.</b><br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p><img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/FIRMA_MIAMI_03_LOW2.jpg" style="max-width:400px;margin-top:20px;"></div>';
@@ -291,15 +416,24 @@ document.getElementById('emailPreviewBox').scrollIntoView({behavior:'smooth'});
 document.getElementById('editSection').classList.remove('visible');
 document.getElementById('btnEditToggle').textContent='✏️ Modifica testo email';
 currentLeadData={nome:document.getElementById('fieldNome').value,cognome:document.getElementById('fieldCognome').value,email:document.getElementById('fieldEmail').value,telefono:document.getElementById('fieldTelefono').value,azienda:document.getElementById('fieldAzienda').value,ruolo:document.getElementById('fieldRuolo').value,indirizzo:document.getElementById('fieldIndirizzo').value,nazione:document.getElementById('fieldNazione').value,lingua:document.getElementById('fieldLingua').value,noteCommerciale:document.getElementById('fieldNote').value,allegatiSelezionati:allegati.join(', '),emailGenerata:html}}
+
 function getSelectedAllegati(){return Array.from(document.querySelectorAll('input[name="allegati"]:checked')).map(c=>c.value)}
+
 async function approveLead(){if(!currentLeadData){showToast('Nessun lead','error');return}showToast('Invio...','info');try{const r=await fetch(API_BASE+'/approva',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({row_number:currentRowNumber||currentLeadData.row_number,commerciale:currentUser,nome:currentLeadData.nome,cognome:currentLeadData.cognome,azienda:currentLeadData.azienda,noteCommerciale:document.getElementById('fieldNote').value,allegatiSelezionati:getSelectedAllegati().join(', '),emailGenerata:currentEmailHtml})});if(!r.ok)throw new Error();showToast('Approvato! Email inviata.','success');resetForm()}catch(e){showToast('Errore','error')}}
+
 async function rejectLead(){if(!currentRowNumber&&!currentLeadData?.row_number){showToast('Nessun lead','error');return}const m=prompt('Motivo (opzionale):');try{const r=await fetch(API_BASE+'/scarta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({row_number:currentRowNumber||currentLeadData.row_number,motivoScarto:m||''})});if(!r.ok)throw new Error();showToast('Scartato','success');resetForm()}catch(e){showToast('Errore','error')}}
+
 function resetForm(){['fieldNome','fieldCognome','fieldEmail','fieldTelefono','fieldAzienda','fieldRuolo','fieldIndirizzo','fieldNazione','fieldNote'].forEach(id=>document.getElementById(id).value='');document.getElementById('fieldLingua').value='italiano';document.querySelectorAll('input[name="allegati"]').forEach(c=>{c.checked=false;c.closest('.allegato-item').classList.remove('selected')});document.getElementById('emailPreviewBox').style.display='none';document.getElementById('capturedImage').style.display='none';document.getElementById('cameraPlaceholder').style.display='block';document.getElementById('btnStartCamera').textContent='📷 Avvia Camera';document.getElementById('editSection').classList.remove('visible');document.getElementById('btnEditToggle').textContent='✏️ Modifica testo email';currentLeadData=null;currentRowNumber=null;currentEmailHtml=''}
+
 async function loadLeads(){const container=document.getElementById('leadsContainer');container.innerHTML='<div class="loading"><div class="spinner"></div>Caricamento...</div>';try{const r=await fetch(API_BASE+'/leads');if(!r.ok)throw new Error();const leads=await r.json();if(!leads.length){container.innerHTML='<div class="empty-state"><div class="icon">📭</div><p>Nessun lead</p></div>';return}container.innerHTML='<table class="leads-table"><thead><tr><th>Nome</th><th>Azienda</th><th>Email</th><th>Stato</th><th>Azioni</th></tr></thead><tbody>'+leads.map(l=>'<tr><td class="lead-name">'+(l.nome||'')+' '+(l.cognome||'')+'</td><td class="lead-company">'+(l.azienda||'-')+'</td><td class="lead-email">'+(l.email||'-')+'</td><td><span class="lead-status '+getStatusClass(l.status)+'">'+getStatusLabel(l.status)+'</span></td><td class="lead-actions"><button class="btn-icon approve" onclick="quickApprove('+l.row_number+')">✓</button><button class="btn-icon reject" onclick="quickReject('+l.row_number+')">✕</button></td></tr>').join('')+'</tbody></table>'}catch(e){container.innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>Errore</p></div>'}}
+
 function getStatusClass(s){if(!s||s===''||s==='in_attesa')return'pending';if(s==='approvato')return'approved';if(s==='scartato')return'rejected';return'pending'}
 function getStatusLabel(s){if(!s||s===''||s==='in_attesa')return'In Attesa';if(s==='approvato')return'Approvato';if(s==='scartato')return'Scartato';return s}
+
 async function quickApprove(row){if(!confirm('Approvare?'))return;try{const r=await fetch(API_BASE+'/approva',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({row_number:row,commerciale:currentUser,noteCommerciale:'',allegatiSelezionati:'',emailGenerata:''})});if(!r.ok)throw new Error();showToast('Approvato!','success');loadLeads()}catch(e){showToast('Errore','error')}}
+
 async function quickReject(row){const m=prompt('Motivo (opzionale):');try{const r=await fetch(API_BASE+'/scarta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({row_number:row,motivoScarto:m||''})});if(!r.ok)throw new Error();showToast('Scartato','success');loadLeads()}catch(e){showToast('Errore','error')}}
+
 function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3000)}
     </script>
 </body>
