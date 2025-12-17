@@ -180,7 +180,7 @@
                         </button>
                         <button class="btn-acquisition" id="btnMethodNFC" data-method="nfc">
                             <span class="icon">📱</span>
-                            <span>NFC</span>
+                            <span>vCard</span>
                         </button>
                         <button class="btn-acquisition" id="btnMethodManuale" data-method="manuale">
                             <span class="icon">✍️</span>
@@ -411,11 +411,63 @@ function logout(){currentUser=null;localStorage.removeItem('toscanini_user');doc
 function showDashboard(){document.getElementById('loginScreen').style.display='none';document.getElementById('mainHeader').style.display='block';document.getElementById('dashboard').classList.add('active');document.getElementById('userName').textContent=commercialiNames[currentUser]||currentUser;loadLeads()}
 function switchTab(tabId){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tabId));document.querySelectorAll('.tab-content').forEach(tc=>tc.classList.toggle('active',tc.id==='tab'+tabId.charAt(0).toUpperCase()+tabId.slice(1)));if(tabId==='leadList')loadLeads()}
 
-async function startCamera(){try{videoStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}}});document.getElementById('videoElement').srcObject=videoStream;document.getElementById('videoElement').style.display='block';document.getElementById('cameraPlaceholder').style.display='none';document.getElementById('capturedImage').style.display='none';document.getElementById('btnCapture').disabled=false;document.getElementById('btnStartCamera').textContent='🔄 Reset'}catch(e){document.getElementById('fileInput').click()}}
-function stopCamera(){if(videoStream){videoStream.getTracks().forEach(t=>t.stop());videoStream=null}document.getElementById('videoElement').style.display='none';document.getElementById('btnCapture').disabled=true}
-function capturePhoto(){const canvas=document.getElementById('canvas'),video=document.getElementById('videoElement');canvas.width=video.videoWidth;canvas.height=video.videoHeight;canvas.getContext('2d').drawImage(video,0,0);const img=canvas.toDataURL('image/jpeg',0.8);showCapturedImage(img);processImage(img.split(',')[1])}
-function handleFileSelect(e){const file=e.target.files[0];if(file){const reader=new FileReader();reader.onload=ev=>{showCapturedImage(ev.target.result);processImage(ev.target.result.split(',')[1])};reader.readAsDataURL(file)}}
-function showCapturedImage(src){stopCamera();document.getElementById('capturedImage').src=src;document.getElementById('capturedImage').style.display='block';document.getElementById('cameraPlaceholder').style.display='none';document.getElementById('btnStartCamera').textContent='📷 Nuova Foto'}
+async function startCamera(){
+    // Prima ferma qualsiasi stream esistente
+    await stopCamera();
+    try{
+        videoStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}}});
+        const video=document.getElementById('videoElement');
+        video.srcObject=videoStream;
+        video.style.display='block';
+        // Aspetta che il video sia pronto (importante per Safari)
+        await video.play();
+        document.getElementById('cameraPlaceholder').style.display='none';
+        document.getElementById('capturedImage').style.display='none';
+        document.getElementById('btnCapture').disabled=false;
+        document.getElementById('btnStartCamera').textContent='🔄 Reset';
+    }catch(e){
+        console.error('Camera error:',e);
+        document.getElementById('fileInput').click();
+    }
+}
+async function stopCamera(){
+    if(videoStream){
+        videoStream.getTracks().forEach(t=>{t.stop();t.enabled=false});
+        videoStream=null;
+    }
+    const video=document.getElementById('videoElement');
+    if(video.srcObject){
+        video.srcObject=null;
+    }
+    video.style.display='none';
+    document.getElementById('btnCapture').disabled=true;
+}
+function capturePhoto(){
+    const canvas=document.getElementById('canvas'),video=document.getElementById('videoElement');
+    canvas.width=video.videoWidth;
+    canvas.height=video.videoHeight;
+    canvas.getContext('2d').drawImage(video,0,0);
+    const img=canvas.toDataURL('image/jpeg',0.8);
+    showCapturedImage(img);
+    processImage(img.split(',')[1]);
+}
+function handleFileSelect(e){
+    const file=e.target.files[0];
+    if(file){
+        const reader=new FileReader();
+        reader.onload=ev=>{showCapturedImage(ev.target.result);processImage(ev.target.result.split(',')[1])};
+        reader.readAsDataURL(file);
+    }
+    // Reset input per permettere selezione stesso file
+    e.target.value='';
+}
+async function showCapturedImage(src){
+    await stopCamera();
+    document.getElementById('capturedImage').src=src;
+    document.getElementById('capturedImage').style.display='block';
+    document.getElementById('cameraPlaceholder').style.display='none';
+    document.getElementById('btnStartCamera').textContent='📷 Nuova Foto';
+}
 
 async function toggleRecording(){
     if(!isRecording){
@@ -563,6 +615,8 @@ function resetForm(){
     document.getElementById('btnStartCamera').textContent='📷 Avvia Camera';
     currentLeadData=null;currentRowNumber=null;currentEmailHtml='';
     initDateTime();
+    // Torna all'inizio della pagina
+    window.scrollTo({top:0,behavior:'smooth'});
 }
 
 async function loadLeads(){
