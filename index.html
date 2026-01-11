@@ -10,135 +10,158 @@
     <style>
         :root{--primary:#3AAFA9;--primary-dark:#2B7A78;--primary-light:#DEF2F1;--text-dark:#17252A;--text-gray:#5C6B6B;--text-light:#8A9A9A;--white:#FFFFFF;--bg-light:#FAFAFA;--border:#E8E8E8;--success:#4CAF50;--warning:#FF9800;--danger:#E57373;--shadow:0 2px 10px rgba(0,0,0,0.08)}
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Open Sans',sans-serif;background:var(--bg-light);color:var(--text-dark);line-height:1.6}
+        body{font-family:'Open Sans',sans-serif;background:var(--bg-light);color:var(--text-dark);line-height:1.6;font-size:16px}
         .container{max-width:1200px;margin:0 auto;padding:20px}
         .header{background:var(--white);border-bottom:1px solid var(--border);padding:15px 0;position:sticky;top:0;z-index:100}
-        .header-content{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center}
-        .logo img{height:24px;width:auto}
-        .user-info{display:flex;align-items:center;gap:20px}
-        .user-name{font-size:0.9rem;color:var(--text-gray)}
+        .header-content{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+        .logo img{height:28px;width:auto}
+        .user-info{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+        .user-name{font-size:1rem;color:var(--text-gray)}
         .user-name strong{color:var(--primary-dark);font-weight:600}
-        .btn-logout{padding:8px 20px;background:transparent;border:1px solid var(--border);color:var(--text-gray);font-size:0.85rem;cursor:pointer;transition:all 0.3s;border-radius:4px}
+        .btn-logout{padding:10px 24px;background:transparent;border:1px solid var(--border);color:var(--text-gray);font-size:1rem;cursor:pointer;transition:all 0.3s;border-radius:6px}
         .btn-logout:hover{border-color:var(--primary);color:var(--primary)}
+        
+        /* Test Mode Toggle */
+        .test-mode-toggle{display:flex;align-items:center;gap:10px;padding:8px 16px;background:#FFEBEE;border:2px solid var(--danger);border-radius:8px;font-size:0.9rem;color:var(--danger)}
+        .test-mode-toggle.active{background:#FFCDD2}
+        .test-mode-toggle input{width:18px;height:18px;accent-color:var(--danger)}
+        
         .login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,var(--primary-light),var(--white));animation:fadeIn 0.5s}
         @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        .login-box{background:var(--white);border-radius:12px;padding:50px;max-width:420px;width:100%;text-align:center;box-shadow:var(--shadow)}
+        .login-box{background:var(--white);border-radius:12px;padding:50px;max-width:450px;width:100%;text-align:center;box-shadow:var(--shadow)}
         .login-logo{margin-bottom:20px;text-align:center}
-        .login-logo img{height:24px;width:auto;display:inline-block}
-        .login-box .subtitle{color:var(--text-light);margin-bottom:40px;font-size:0.9rem}
+        .login-logo img{height:32px;width:auto;display:inline-block}
+        .login-box .subtitle{color:var(--text-light);margin-bottom:40px;font-size:1.1rem}
         .select-wrapper{position:relative;margin-bottom:24px}
-        .select-wrapper select{width:100%;padding:14px 18px;background:var(--white);border:1px solid var(--border);border-radius:8px;color:var(--text-dark);font-family:inherit;font-size:0.95rem;cursor:pointer;appearance:none;transition:all 0.3s}
+        .select-wrapper select{width:100%;padding:16px 20px;background:var(--white);border:1px solid var(--border);border-radius:8px;color:var(--text-dark);font-family:inherit;font-size:1.1rem;cursor:pointer;appearance:none;transition:all 0.3s}
         .select-wrapper select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
-        .select-wrapper::after{content:'▾';position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--text-light);pointer-events:none}
-        .btn-primary{width:100%;padding:14px 28px;background:var(--primary);border:none;border-radius:8px;color:var(--white);font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer;transition:all 0.3s}
+        .select-wrapper::after{content:'▾';position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--text-light);pointer-events:none;font-size:1.2rem}
+        .btn-primary{width:100%;padding:16px 28px;background:var(--primary);border:none;border-radius:8px;color:var(--white);font-family:inherit;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.3s}
         .btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px)}
         .btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none}
         .dashboard{display:none;animation:fadeIn 0.5s}
         .dashboard.active{display:block}
         .tabs{display:flex;background:var(--white);border-radius:8px;padding:6px;margin:24px 0;box-shadow:var(--shadow)}
-        .tab{flex:1;padding:14px 24px;background:transparent;border:none;border-radius:6px;color:var(--text-gray);font-family:inherit;font-size:0.9rem;font-weight:500;cursor:pointer;transition:all 0.3s}
+        .tab{flex:1;padding:16px 24px;background:transparent;border:none;border-radius:6px;color:var(--text-gray);font-family:inherit;font-size:1rem;font-weight:500;cursor:pointer;transition:all 0.3s}
         .tab:hover{color:var(--text-dark)}
         .tab.active{background:var(--primary);color:var(--white)}
         .tab-content{display:none}
         .tab-content.active{display:block;animation:fadeIn 0.3s}
         .card{background:var(--white);border-radius:12px;padding:28px;margin-bottom:20px;box-shadow:var(--shadow)}
-        .card-title{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:500;color:var(--text-dark);margin-bottom:20px;display:flex;align-items:center;gap:10px}
-        .card-title .icon{color:var(--primary)}
+        .card-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:500;color:var(--text-dark);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+        .card-title .icon{color:var(--primary);font-size:1.3rem}
         .acquisition-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
         @media(max-width:600px){.acquisition-buttons{grid-template-columns:1fr}}
-        .btn-acquisition{padding:16px;background:var(--bg-light);border:2px solid var(--border);border-radius:8px;color:var(--text-dark);font-family:inherit;font-size:0.9rem;cursor:pointer;transition:all 0.3s;display:flex;flex-direction:column;align-items:center;gap:8px}
+        .btn-acquisition{padding:18px;background:var(--bg-light);border:2px solid var(--border);border-radius:8px;color:var(--text-dark);font-family:inherit;font-size:1rem;cursor:pointer;transition:all 0.3s;display:flex;flex-direction:column;align-items:center;gap:8px}
         .btn-acquisition:hover{border-color:var(--primary);background:var(--primary-light)}
         .btn-acquisition.active{border-color:var(--primary);background:var(--primary-light)}
-        .btn-acquisition .icon{font-size:1.5rem}
+        .btn-acquisition .icon{font-size:1.8rem}
         .camera-section{display:grid;grid-template-columns:1fr 1fr;gap:20px}
         @media(max-width:900px){.camera-section{grid-template-columns:1fr}}
         .camera-container{width:100%;aspect-ratio:4/3;background:var(--bg-light);border:2px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:16px}
         .camera-container video,.camera-container img{width:100%;height:100%;object-fit:cover;border-radius:6px}
         .camera-placeholder{text-align:center;color:var(--text-light)}
-        .camera-placeholder .icon{font-size:3rem;margin-bottom:10px;color:var(--primary);opacity:0.5}
+        .camera-placeholder .icon{font-size:3.5rem;margin-bottom:10px;color:var(--primary);opacity:0.5}
+        .camera-placeholder p{font-size:1.1rem}
         .camera-buttons{display:flex;gap:12px}
-        .btn-secondary{flex:1;padding:12px 20px;background:var(--white);border:1px solid var(--border);border-radius:8px;color:var(--text-dark);font-family:inherit;font-size:0.9rem;cursor:pointer;transition:all 0.3s}
+        .btn-secondary{flex:1;padding:14px 20px;background:var(--white);border:1px solid var(--border);border-radius:8px;color:var(--text-dark);font-family:inherit;font-size:1rem;cursor:pointer;transition:all 0.3s}
         .btn-secondary:hover{border-color:var(--primary);color:var(--primary)}
-        .btn-capture{flex:1;padding:12px 20px;background:var(--primary);border:none;border-radius:8px;color:var(--white);font-family:inherit;font-size:0.9rem;font-weight:500;cursor:pointer;transition:all 0.3s}
+        .btn-capture{flex:1;padding:14px 20px;background:var(--primary);border:none;border-radius:8px;color:var(--white);font-family:inherit;font-size:1rem;font-weight:500;cursor:pointer;transition:all 0.3s}
         .btn-capture:hover{background:var(--primary-dark)}
         .btn-capture:disabled{opacity:0.5;cursor:not-allowed}
-        .form-group{margin-bottom:18px}
-        .form-group label{display:block;margin-bottom:6px;font-size:0.8rem;color:var(--text-gray);font-weight:500;text-transform:uppercase;letter-spacing:0.5px}
-        .form-group input,.form-group textarea,.form-group select{width:100%;padding:12px 14px;background:var(--white);border:1px solid var(--border);border-radius:8px;color:var(--text-dark);font-family:inherit;font-size:0.95rem;transition:all 0.3s}
+        .form-group{margin-bottom:20px}
+        .form-group label{display:block;margin-bottom:8px;font-size:0.95rem;color:var(--text-gray);font-weight:500;text-transform:uppercase;letter-spacing:0.5px}
+        .form-group input,.form-group textarea,.form-group select{width:100%;padding:14px 16px;background:var(--white);border:1px solid var(--border);border-radius:8px;color:var(--text-dark);font-family:inherit;font-size:1.1rem;transition:all 0.3s}
         .form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
         .form-group input:read-only{background:var(--bg-light);color:var(--text-gray)}
-        .form-group textarea{min-height:100px;resize:vertical}
+        .form-group textarea{min-height:120px;resize:vertical}
         .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
         @media(max-width:600px){.form-row{grid-template-columns:1fr}}
-        .location-info{background:var(--primary-light);border-radius:8px;padding:12px 16px;margin-bottom:18px;font-size:0.85rem;color:var(--primary-dark);display:flex;align-items:center;gap:10px}
-        .location-info .icon{font-size:1.2rem}
-        .category-label{font-size:0.75rem;color:var(--primary-dark);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-top:20px;margin-bottom:12px;display:block}
-        .allegati-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-        .allegato-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg-light);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.3s}
+        .location-info{background:var(--primary-light);border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:1rem;color:var(--primary-dark);display:flex;align-items:center;gap:10px}
+        .location-info .icon{font-size:1.4rem}
+        .category-label{font-size:0.9rem;color:var(--primary-dark);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-top:24px;margin-bottom:14px;display:block}
+        .allegati-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+        .allegato-item{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--bg-light);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.3s}
         .allegato-item:hover,.allegato-item.selected{border-color:var(--primary);background:var(--primary-light)}
-        .allegato-item input[type="checkbox"]{accent-color:var(--primary);width:18px;height:18px}
-        .allegato-item span{font-size:0.85rem;color:var(--text-dark)}
-        .email-preview{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:24px;font-family:Arial,sans-serif;font-size:14px;line-height:1.6;max-height:350px;overflow-y:auto;color:#333}
+        .allegato-item input[type="checkbox"]{accent-color:var(--primary);width:20px;height:20px}
+        .allegato-item span{font-size:1rem;color:var(--text-dark)}
+        .email-preview{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:24px;font-family:Arial,sans-serif;font-size:15px;line-height:1.6;max-height:400px;overflow-y:auto;color:#333}
         .action-buttons{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
-        .btn-approve{flex:1;min-width:140px;padding:14px 20px;background:var(--success);border:none;border-radius:8px;color:var(--white);font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-approve{flex:1;min-width:150px;padding:16px 24px;background:var(--success);border:none;border-radius:8px;color:var(--white);font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px}
         .btn-approve:hover{background:#43A047;transform:translateY(-1px)}
-        .btn-save{flex:1;min-width:140px;padding:14px 20px;background:var(--warning);border:none;border-radius:8px;color:var(--white);font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-save{flex:1;min-width:150px;padding:16px 24px;background:var(--warning);border:none;border-radius:8px;color:var(--white);font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px}
         .btn-save:hover{background:#F57C00;transform:translateY(-1px)}
-        .btn-reject{flex:1;min-width:140px;padding:14px 20px;background:var(--white);border:1px solid var(--danger);border-radius:8px;color:var(--danger);font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-reject{flex:1;min-width:150px;padding:16px 24px;background:var(--white);border:2px solid var(--danger);border-radius:8px;color:var(--danger);font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px}
         .btn-reject:hover{background:var(--danger);color:var(--white)}
-        .btn-edit-toggle{padding:10px 20px;background:var(--white);border:1px solid var(--border);border-radius:8px;color:var(--text-gray);font-family:inherit;font-size:0.85rem;cursor:pointer;transition:all 0.3s;margin-top:16px}
+        .btn-continue{flex:1;min-width:150px;padding:16px 24px;background:var(--primary);border:none;border-radius:8px;color:var(--white);font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-continue:hover{background:var(--primary-dark);transform:translateY(-1px)}
+        .btn-edit-toggle{padding:12px 24px;background:var(--white);border:1px solid var(--border);border-radius:8px;color:var(--text-gray);font-family:inherit;font-size:1rem;cursor:pointer;transition:all 0.3s;margin-top:16px}
         .btn-edit-toggle:hover{border-color:var(--primary);color:var(--primary)}
         .edit-section{display:none;margin-top:20px}
         .edit-section.visible{display:block}
         .generate-section{text-align:center;margin-top:28px}
-        .btn-generate{padding:14px 48px;background:var(--primary);border:none;border-radius:8px;color:var(--white);font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer;transition:all 0.3s}
-        .btn-generate:hover{background:var(--primary-dark);transform:translateY(-1px)}
+        .btn-generate{padding:18px 40px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border:none;border-radius:8px;color:var(--white);font-family:inherit;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(58,175,169,0.3)}
+        .btn-generate:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(58,175,169,0.4)}
         .leads-table{width:100%;border-collapse:collapse}
-        .leads-table th{text-align:left;padding:14px 16px;background:var(--bg-light);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-gray);font-weight:600;border-bottom:1px solid var(--border)}
-        .leads-table td{padding:16px;border-bottom:1px solid var(--border);vertical-align:middle}
+        .leads-table th,.leads-table td{padding:16px;text-align:left;border-bottom:1px solid var(--border);font-size:1rem}
+        .leads-table th{background:var(--bg-light);font-weight:600;color:var(--text-gray);text-transform:uppercase;font-size:0.9rem}
         .leads-table tr:hover{background:var(--primary-light)}
         .lead-name{font-weight:500;color:var(--text-dark)}
-        .lead-company{font-size:0.85rem;color:var(--text-gray)}
-        .lead-email{font-size:0.85rem;color:var(--primary-dark)}
-        .lead-status{display:inline-block;padding:6px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
-        .lead-status.pending{background:#FFF8E1;color:#F9A825}
-        .lead-status.approved{background:#E8F5E9;color:#43A047}
-        .lead-status.rejected{background:#FFEBEE;color:#E57373}
+        .lead-company{color:var(--text-gray)}
+        .lead-status{padding:6px 14px;border-radius:20px;font-size:0.9rem;font-weight:500}
+        .lead-status.pending{background:#FFF3E0;color:#E65100}
+        .lead-status.approved{background:#E8F5E9;color:#2E7D32}
+        .lead-status.rejected{background:#FFEBEE;color:#C62828}
         .lead-actions{display:flex;gap:8px}
-        .btn-icon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--white);border:1px solid var(--border);border-radius:8px;color:var(--text-gray);cursor:pointer;transition:all 0.3s;font-size:1rem}
-        .btn-icon:hover{border-color:var(--primary);color:var(--primary)}
-        .btn-icon.approve:hover{border-color:var(--success);color:var(--success)}
-        .btn-icon.reject:hover{border-color:var(--danger);color:var(--danger)}
-        .loading{display:flex;align-items:center;justify-content:center;padding:60px;color:var(--text-light)}
-        .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin-right:12px}
+        .btn-icon{width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;transition:all 0.3s;font-size:1.1rem}
+        .btn-icon.approve{background:#E8F5E9;color:#43A047}
+        .btn-icon.approve:hover{background:#43A047;color:white}
+        .btn-icon.reject{background:#FFEBEE;color:#E57373}
+        .btn-icon.reject:hover{background:#E57373;color:white}
+        .btn-icon.edit{background:#E3F2FD;color:#1976D2}
+        .btn-icon.edit:hover{background:#1976D2;color:white}
+        .loading{text-align:center;padding:40px}
+        .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
         @keyframes spin{to{transform:rotate(360deg)}}
-        .toast{position:fixed;bottom:30px;right:30px;padding:16px 24px;background:var(--white);border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.15);color:var(--text-dark);font-size:0.9rem;z-index:1000;transform:translateY(100px);opacity:0;transition:all 0.3s;display:flex;align-items:center;gap:10px}
-        .toast.show{transform:translateY(0);opacity:1}
+        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--white);padding:16px 28px;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:1000;opacity:0;transition:all 0.3s;font-size:1rem}
+        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
         .toast.success{border-left:4px solid var(--success)}
         .toast.error{border-left:4px solid var(--danger)}
         .toast.info{border-left:4px solid var(--primary)}
         @media(max-width:768px){.header-content{flex-direction:column;gap:12px}.leads-table th:nth-child(3),.leads-table td:nth-child(3){display:none}.login-box{margin:20px;padding:30px}.tabs{flex-direction:column}.action-buttons{flex-direction:column}}
         .empty-state{text-align:center;padding:60px 20px;color:var(--text-light)}
-        .empty-state .icon{font-size:3rem;margin-bottom:16px;opacity:0.5}
-        .recording-section{margin-bottom:20px;padding:20px;background:linear-gradient(135deg, #FFF8E1, #FFECB3);border-radius:8px;border:2px solid #FFD54F}
+        .empty-state .icon{font-size:4rem;margin-bottom:16px;opacity:0.5}
+        .empty-state p{font-size:1.1rem}
+        .recording-section{margin-bottom:20px;padding:24px;background:linear-gradient(135deg, #FFF8E1, #FFECB3);border-radius:8px;border:2px solid #FFD54F}
         .recording-toggle{display:flex;align-items:center;justify-content:space-between;gap:16px}
-        .recording-label{display:flex;align-items:center;gap:10px;font-size:0.9rem;color:var(--text-dark);font-weight:500}
-        .recording-label .mic-icon{font-size:1.3rem}
-        .toggle-switch{position:relative;width:56px;height:30px;background:var(--border);border-radius:15px;cursor:pointer;transition:all 0.3s}
+        .recording-label{display:flex;align-items:center;gap:12px;font-size:1.1rem;color:var(--text-dark);font-weight:500}
+        .recording-label .mic-icon{font-size:1.6rem}
+        .toggle-switch{position:relative;width:64px;height:34px;background:var(--border);border-radius:17px;cursor:pointer;transition:all 0.3s}
         .toggle-switch.active{background:var(--danger)}
-        .toggle-switch::after{content:'';position:absolute;width:24px;height:24px;background:var(--white);border-radius:50%;top:3px;left:3px;transition:all 0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
-        .toggle-switch.active::after{left:29px}
-        .recording-status{font-size:0.8rem;color:var(--text-light);margin-top:12px;display:flex;align-items:center;gap:8px}
+        .toggle-switch::after{content:'';position:absolute;width:28px;height:28px;background:var(--white);border-radius:50%;top:3px;left:3px;transition:all 0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
+        .toggle-switch.active::after{left:33px}
+        .recording-status{font-size:1rem;color:var(--text-light);margin-top:14px;display:flex;align-items:center;gap:10px}
         .recording-status.active{color:var(--danger);font-weight:500}
-        .recording-dot{width:10px;height:10px;background:var(--danger);border-radius:50%;animation:pulse 1.5s infinite}
+        .recording-dot{width:12px;height:12px;background:var(--danger);border-radius:50%;animation:pulse 1.5s infinite}
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-        .transcription-loading{display:flex;align-items:center;gap:10px;padding:15px;background:#FFF8E1;border-radius:8px;margin-top:12px;font-size:0.85rem;color:#F9A825}
-        .quick-actions{margin-top:20px;padding-top:20px;border-top:1px solid var(--border)}
-        .checkbox-option{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg-light);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.3s;margin-top:12px}
+        .transcription-loading{display:flex;align-items:center;gap:12px;padding:16px;background:#FFF8E1;border-radius:8px;margin-top:14px;font-size:1rem;color:#F9A825}
+        .quick-actions{margin-top:24px;padding-top:24px;border-top:1px solid var(--border)}
+        .checkbox-option{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--bg-light);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.3s;margin-top:14px}
         .checkbox-option:hover,.checkbox-option.selected{border-color:var(--primary);background:var(--primary-light)}
-        .checkbox-option input[type="checkbox"]{accent-color:var(--primary);width:18px;height:18px}
-        .checkbox-option label{font-size:0.9rem;color:var(--text-dark);cursor:pointer}
-        .section-divider{border-top:1px solid var(--border);margin:20px 0;padding-top:20px}
+        .checkbox-option input[type="checkbox"]{accent-color:var(--primary);width:20px;height:20px}
+        .checkbox-option label{font-size:1rem;color:var(--text-dark);cursor:pointer}
+        .section-divider{border-top:1px solid var(--border);margin:24px 0;padding-top:24px}
+        
+        /* Phase sections */
+        .phase-section{display:none}
+        .phase-section.active{display:block}
+        .phase-indicator{display:flex;justify-content:center;gap:8px;margin-bottom:24px}
+        .phase-dot{width:12px;height:12px;border-radius:50%;background:var(--border)}
+        .phase-dot.active{background:var(--primary)}
+        .phase-dot.completed{background:var(--success)}
+        
+        /* Loading allegati */
+        .allegati-loading{text-align:center;padding:30px;color:var(--text-light)}
     </style>
 </head>
 <body>
@@ -160,195 +183,202 @@
             <button class="btn-primary" id="btnLogin" disabled>Accedi</button>
         </div>
     </div>
+    
     <header class="header" id="mainHeader" style="display:none;">
         <div class="header-content">
             <div class="logo"><img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/Toscanini.png" alt="Toscanini"></div>
             <div class="user-info">
+                <label class="test-mode-toggle" id="testModeToggle">
+                    <input type="checkbox" id="testModeCheckbox">
+                    <span>🧪 Modalità Test</span>
+                </label>
                 <span class="user-name">Ciao, <strong id="userName"></strong></span>
                 <button class="btn-logout" id="btnLogout">Esci</button>
             </div>
         </div>
     </header>
+    
     <div id="dashboard" class="dashboard">
         <div class="container">
             <div class="tabs">
                 <button class="tab active" data-tab="newLead">➕ Nuovo Contatto</button>
                 <button class="tab" data-tab="leadList">📋 Da Approvare</button>
             </div>
+            
             <div id="tabNewLead" class="tab-content active">
-                <!-- REGISTRAZIONE AUDIO - SPOSTATA ALL'INIZIO -->
-                <div class="card">
-                    <h2 class="card-title"><span class="icon">🎤</span> Registrazione Conversazione</h2>
-                    <p style="font-size:0.85rem;color:var(--text-gray);margin-bottom:16px;">Attiva la registrazione <strong>prima</strong> di iniziare a parlare con il cliente</p>
-                    <div class="recording-section" style="margin:0;background:linear-gradient(135deg, #FFF8E1, #FFECB3);">
-                        <div class="recording-toggle">
-                            <div class="recording-label"><span class="mic-icon">🎤</span><span>Registra conversazione</span></div>
-                            <div class="toggle-switch" id="recordingToggle"></div>
-                        </div>
-                        <div class="recording-status" id="recordingStatus"><span>Tocca per registrare</span></div>
-                        <div class="transcription-loading" id="transcriptionLoading" style="display:none;">
-                            <div class="spinner" style="width:20px;height:20px;margin:0;border-width:2px;"></div>
-                            <span>Trascrizione in corso...</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2 class="card-title"><span class="icon">📥</span> Metodo Acquisizione</h2>
-                    <div class="acquisition-buttons">
-                        <button class="btn-acquisition active" id="btnMethodBiglietto" data-method="biglietto">
-                            <span class="icon">📷</span>
-                            <span>Biglietto da Visita</span>
-                        </button>
-                        <button class="btn-acquisition" id="btnMethodNFC" data-method="nfc">
-                            <span class="icon">📱</span>
-                            <span>vCard</span>
-                        </button>
-                        <button class="btn-acquisition" id="btnMethodManuale" data-method="manuale">
-                            <span class="icon">✍️</span>
-                            <span>Manuale</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="camera-section">
-                    <div class="card" id="cameraCard">
-                        <h2 class="card-title"><span class="icon">📷</span> Scansiona Biglietto</h2>
-                        <div class="camera-container" id="cameraContainer">
-                            <div class="camera-placeholder" id="cameraPlaceholder">
-                                <div class="icon">📸</div>
-                                <p>Clicca per scattare foto</p>
-                            </div>
-                            <video id="videoElement" autoplay playsinline style="display:none;"></video>
-                            <img id="capturedImage" style="display:none;">
-                        </div>
-                        <div class="camera-buttons">
-                            <button class="btn-secondary" id="btnStartCamera">📷 Avvia Camera</button>
-                            <button class="btn-capture" id="btnCapture" disabled>Scatta Foto</button>
-                        </div>
-                        <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none;">
-                    </div>
+                <!-- FASE 1: Acquisizione -->
+                <div id="phase1" class="phase-section active">
+                    <!-- REGISTRAZIONE AUDIO -->
                     <div class="card">
-                        <h2 class="card-title"><span class="icon">📋</span> Dati Contatto</h2>
-                        <div class="location-info" id="locationInfo">
-                            <span class="icon">📍</span>
-                            <span id="locationText">Rilevamento posizione...</span>
+                        <h2 class="card-title"><span class="icon">🎤</span> Registrazione Conversazione</h2>
+                        <p style="font-size:1rem;color:var(--text-gray);margin-bottom:16px;">Attiva la registrazione <strong>prima</strong> di iniziare a parlare con il cliente</p>
+                        <div class="recording-section" style="margin:0;">
+                            <div class="recording-toggle">
+                                <div class="recording-label"><span class="mic-icon">🎤</span><span>Registra conversazione</span></div>
+                                <div class="toggle-switch" id="recordingToggle"></div>
+                            </div>
+                            <div class="recording-status" id="recordingStatus"><span>Tocca per registrare</span></div>
+                            <div class="transcription-loading" id="transcriptionLoading" style="display:none;">
+                                <div class="spinner" style="width:24px;height:24px;margin:0;border-width:2px;"></div>
+                                <span>Trascrizione in corso...</span>
+                            </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Data/Ora</label><input type="text" id="fieldDataOra" readonly></div>
-                            <div class="form-group"><label>Fonte</label><input type="text" id="fieldFonte" value="Biglietto" readonly></div>
+                    </div>
+
+                    <!-- METODO ACQUISIZIONE -->
+                    <div class="card">
+                        <h2 class="card-title"><span class="icon">📥</span> Metodo Acquisizione</h2>
+                        <div class="acquisition-buttons">
+                            <button class="btn-acquisition active" data-method="biglietto">
+                                <span class="icon">📷</span>
+                                <span>Biglietto da Visita</span>
+                            </button>
+                            <button class="btn-acquisition" data-method="nfc">
+                                <span class="icon">📱</span>
+                                <span>vCard</span>
+                            </button>
+                            <button class="btn-acquisition" data-method="manuale">
+                                <span class="icon">✍️</span>
+                                <span>Manuale</span>
+                            </button>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Nome</label><input type="text" id="fieldNome" placeholder="Nome"></div>
-                            <div class="form-group"><label>Cognome</label><input type="text" id="fieldCognome" placeholder="Cognome"></div>
+                    </div>
+                    
+                    <!-- CAMERA E DATI -->
+                    <div class="camera-section">
+                        <div class="card" id="cameraCard">
+                            <h2 class="card-title"><span class="icon">📷</span> Scansiona Biglietto</h2>
+                            <div class="camera-container" id="cameraContainer">
+                                <div class="camera-placeholder" id="cameraPlaceholder">
+                                    <div class="icon">📸</div>
+                                    <p>Clicca per scattare foto</p>
+                                </div>
+                                <video id="videoElement" autoplay playsinline style="display:none;"></video>
+                                <img id="capturedImage" style="display:none;">
+                            </div>
+                            <div class="camera-buttons">
+                                <button class="btn-secondary" id="btnStartCamera">📷 Avvia Camera</button>
+                                <button class="btn-capture" id="btnCapture" disabled>Scatta Foto</button>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none;">
                         </div>
-                        <div class="form-group"><label>Email</label><input type="email" id="fieldEmail" placeholder="email@esempio.com"></div>
-                        <div class="form-group"><label>Telefono</label><input type="tel" id="fieldTelefono" placeholder="+39..."></div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Azienda</label><input type="text" id="fieldAzienda" placeholder="Azienda"></div>
-                            <div class="form-group"><label>Ruolo</label><input type="text" id="fieldRuolo" placeholder="Ruolo"></div>
+                        
+                        <div class="card">
+                            <h2 class="card-title"><span class="icon">📋</span> Dati Contatto</h2>
+                            <div class="location-info" id="locationInfo">
+                                <span class="icon">📍</span>
+                                <span id="locationText">Rilevamento posizione...</span>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Data/Ora</label><input type="text" id="fieldDataOra" readonly></div>
+                                <div class="form-group"><label>Fonte</label><input type="text" id="fieldFonte" value="Biglietto" readonly></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Nome</label><input type="text" id="fieldNome" placeholder="Nome"></div>
+                                <div class="form-group"><label>Cognome</label><input type="text" id="fieldCognome" placeholder="Cognome"></div>
+                            </div>
+                            <div class="form-group"><label>Email</label><input type="email" id="fieldEmail" placeholder="email@esempio.com"></div>
+                            <div class="form-group"><label>Telefono</label><input type="tel" id="fieldTelefono" placeholder="+39..."></div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Azienda</label><input type="text" id="fieldAzienda" placeholder="Azienda"></div>
+                                <div class="form-group"><label>Ruolo</label><input type="text" id="fieldRuolo" placeholder="Ruolo"></div>
+                            </div>
+                            <div class="form-group"><label>Indirizzo</label><input type="text" id="fieldIndirizzo" placeholder="Indirizzo"></div>
+                            <div class="form-row">
+                                <div class="form-group"><label>Nazione</label><input type="text" id="fieldNazione" placeholder="Nazione"></div>
+                                <div class="form-group">
+                                    <label>Lingua Email</label>
+                                    <select id="fieldLingua">
+                                        <option value="italiano">Italiano</option>
+                                        <option value="english">English</option>
+                                        <option value="français">Français</option>
+                                        <option value="español">Español</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="section-divider"></div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Tipo Cliente</label>
+                                    <select id="fieldTipoCliente">
+                                        <option value="">Seleziona...</option>
+                                        <option value="studio_architettura">Studio di Architettura</option>
+                                        <option value="interior_design">Interior Design</option>
+                                        <option value="hotel">Hotel</option>
+                                        <option value="privato">Privato</option>
+                                        <option value="altro">Altro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Commerciale di Riferimento</label>
+                                    <select id="fieldCommercialeRif">
+                                        <option value="">Seleziona...</option>
+                                        <option value="federica@toscanini.it">Federica Toscanini</option>
+                                        <option value="marina.agliaudi@toscanini.it">Marina Agliaudi</option>
+                                        <option value="benedetta.giardino@toscanini.it">Benedetta Giardino</option>
+                                        <option value="alessandra.spruzzola@toscanini.it">Alessandra Spruzzola</option>
+                                        <option value="marina.raimondi@toscanini.it">Marina Raimondi</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group"><label>Note Commerciale</label><textarea id="fieldNote" placeholder="Riassunto conversazione (generato automaticamente dalla registrazione)..."></textarea></div>
+                            
+                            <!-- AZIONI FASE 1 -->
+                            <div class="quick-actions">
+                                <div class="action-buttons">
+                                    <button class="btn-continue" id="btnContinue">➡️ Continua</button>
+                                    <button class="btn-save" id="btnQuickSave">📁 Salva per dopo</button>
+                                    <button class="btn-reject" id="btnQuickReject">🗑️ Scarta</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group"><label>Indirizzo</label><input type="text" id="fieldIndirizzo" placeholder="Indirizzo"></div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Nazione</label><input type="text" id="fieldNazione" placeholder="Nazione"></div>
-                            <div class="form-group">
-                                <label>Lingua Email</label>
-                                <select id="fieldLingua">
-                                    <option value="italiano">Italiano</option>
-                                    <option value="english">English</option>
-                                    <option value="français">Français</option>
-                                    <option value="español">Español</option>
-                                </select>
+                    </div>
+                </div>
+                
+                <!-- FASE 2: Email -->
+                <div id="phase2" class="phase-section">
+                    <div class="card">
+                        <h2 class="card-title"><span class="icon">📎</span> Seleziona Allegati</h2>
+                        <div id="allegatiContainer">
+                            <div class="allegati-loading">
+                                <div class="spinner"></div>
+                                <p>Caricamento allegati...</p>
                             </div>
                         </div>
                         
-                        <!-- TIPO CLIENTE -->
                         <div class="section-divider"></div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Tipo Cliente</label>
-                                <select id="fieldTipoCliente">
-                                    <option value="">Seleziona...</option>
-                                    <option value="studio_architettura">Studio di Architettura</option>
-                                    <option value="interior_design">Interior Design</option>
-                                    <option value="hotel">Hotel</option>
-                                    <option value="privato">Privato</option>
-                                    <option value="altro">Altro</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Commerciale di Riferimento</label>
-                                <select id="fieldCommercialeRif">
-                                    <option value="">Seleziona...</option>
-                                    <option value="federica@toscanini.it">Federica Toscanini</option>
-                                    <option value="marina.agliaudi@toscanini.it">Marina Agliaudi</option>
-                                    <option value="benedetta.giardino@toscanini.it">Benedetta Giardino</option>
-                                    <option value="alessandra.spruzzola@toscanini.it">Alessandra Spruzzola</option>
-                                    <option value="marina.raimondi@toscanini.it">Marina Raimondi</option>
-                                </select>
-                            </div>
+                        <div class="checkbox-option" id="ccBackofficeOption">
+                            <input type="checkbox" id="ccBackoffice" name="ccBackoffice">
+                            <label for="ccBackoffice">📧 Metti in copia Backoffice (per offerte)</label>
                         </div>
-
-                        <div class="form-group" style="margin-top:18px;"><label>Note Commerciale</label><textarea id="fieldNote" placeholder="Inserisci note sulla conversazione (o usa la registrazione vocale)..."></textarea></div>
-                        <div class="quick-actions">
-                            <div class="action-buttons">
-                                <button class="btn-save" id="btnQuickSave">💾 Salva per dopo</button>
-                                <button class="btn-reject" id="btnQuickReject">✕ Scarta</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <h2 class="card-title"><span class="icon">📎</span> Allegati Email</h2>
-                    <span class="category-label">Interior</span>
-                    <div class="allegati-grid">
-                        <label class="allegato-item"><input type="checkbox" name="allegati" value="interior_catalog"><span>Catalogo Interior 2024</span></label>
-                        <label class="allegato-item"><input type="checkbox" name="allegati" value="interior_listino"><span>Listino Interior 2025</span></label>
-                        <label class="allegato-item"><input type="checkbox" name="allegati" value="interior_novita"><span>Novità Interior 2025</span></label>
-                    </div>
-                    <span class="category-label">Lingerie</span>
-                    <div class="allegati-grid">
-                        <label class="allegato-item"><input type="checkbox" name="allegati" value="lingerie_catalog"><span>Catalogo Lingerie 2021</span></label>
-                    </div>
-                    <span class="category-label">Hotellerie</span>
-                    <div class="allegati-grid">
-                        <label class="allegato-item"><input type="checkbox" name="allegati" value="hotellerie_catalog"><span>Catalogo Hotellerie 2022</span></label>
-                        <label class="allegato-item"><input type="checkbox" name="allegati" value="hotellerie_listino"><span>Listino Hotellerie 2023</span></label>
-                    </div>
-                    <span class="category-label">Generale</span>
-                    <div class="allegati-grid">
-                        <label class="allegato-item"><input type="checkbox" name="allegati" value="generale_catalog"><span>Catalogo Generale 2024</span></label>
-                        <label class="allegato-item"><input type="checkbox" name="allegati" value="inspiration"><span>Inspiration Book</span></label>
-                    </div>
-                    <span class="category-label">Centenario</span>
-                    <div class="allegati-grid">
-                        <label class="allegato-item"><input type="checkbox" name="allegati" value="centenario_libro"><span>Libro Centenario</span></label>
-                        <label class="allegato-item"><input type="checkbox" name="allegati" value="centenario_video_ita"><span>Video Centenario ITA</span></label>
-                        <label class="allegato-item"><input type="checkbox" name="allegati" value="centenario_video_eng"><span>Video Centenario ENG</span></label>
                     </div>
                     
-                    <!-- CC SIMONA -->
-                    <div class="section-divider"></div>
-                    <div class="checkbox-option" id="ccSimonaOption">
-                        <input type="checkbox" id="ccSimona" name="ccSimona">
-                        <label for="ccSimona">📧 Metti in copia Simona Giuppone (per offerte)</label>
+                    <div class="generate-section">
+                        <button class="btn-generate" id="btnGenerateEmail">✉️ Genera Anteprima Email</button>
                     </div>
-                </div>
-                <div class="generate-section"><button class="btn-generate" id="btnGenerateEmail">Genera Anteprima Email</button></div>
-                <div class="card" id="emailPreviewBox" style="display:none;">
-                    <h2 class="card-title"><span class="icon">✉️</span> Anteprima Email</h2>
-                    <div class="email-preview" id="emailPreview"></div>
-                    <button class="btn-edit-toggle" id="btnEditToggle">✏️ Modifica email</button>
-                    <div class="edit-section" id="editSection">
-                        <div class="form-group"><label>Modifica testo</label><textarea id="emailEditText" style="min-height:200px;"></textarea></div>
-                        <button class="btn-secondary" id="btnUpdatePreview" style="margin-top:10px;">Aggiorna anteprima</button>
+                    
+                    <div class="card" id="emailPreviewBox" style="display:none;">
+                        <h2 class="card-title"><span class="icon">✉️</span> Anteprima Email</h2>
+                        <div class="email-preview" id="emailPreview"></div>
+                        <button class="btn-edit-toggle" id="btnEditToggle">✏️ Modifica email</button>
+                        <div class="edit-section" id="editSection">
+                            <div class="form-group"><label>Modifica testo</label><textarea id="emailEditText" style="min-height:200px;"></textarea></div>
+                            <button class="btn-secondary" id="btnUpdatePreview" style="margin-top:12px;">Aggiorna anteprima</button>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn-approve" id="btnApprove">✅ Approva e Invia</button>
+                            <button class="btn-save" id="btnSaveForLater">📁 Salva</button>
+                            <button class="btn-reject" id="btnReject">🗑️ Scarta</button>
+                        </div>
                     </div>
-                    <div class="action-buttons">
-                        <button class="btn-approve" id="btnApprove">✓ Approva e Invia</button>
-                        <button class="btn-save" id="btnSaveForLater">💾 Salva</button>
-                        <button class="btn-reject" id="btnReject">✕ Scarta</button>
+                    
+                    <div style="text-align:center;margin-top:20px;">
+                        <button class="btn-secondary" id="btnBackToPhase1">⬅️ Torna indietro</button>
                     </div>
                 </div>
             </div>
+            
             <div id="tabLeadList" class="tab-content">
                 <div class="card">
                     <h2 class="card-title"><span class="icon">📋</span> Contatti da Approvare</h2>
@@ -357,16 +387,21 @@
             </div>
         </div>
     </div>
+    
     <div class="toast" id="toast"></div>
     <canvas id="canvas" style="display:none;"></canvas>
+
 <script>
 const API_BASE='https://giotosca.app.n8n.cloud/webhook';
+const TEST_EMAIL='giovanni@toscanini.it';
+
 let currentUser=null,currentUserEmail=null,currentLeadData=null,currentRowNumber=null,videoStream=null,currentEmailHtml='';
 let mediaRecorder=null,audioChunks=[],isRecording=false,recordingStartTime=null,recordingTimer=null;
 let currentPosition={lat:null,lng:null,location:''};
 let acquisitionMethod='biglietto';
+let testMode=false;
+let allegatiList=[];
 
-// Mappa commerciali con email
 const commercialiData={
     'federica@toscanini.it':{name:'Federica Toscanini',email:'federica@toscanini.it'},
     'marina.agliaudi@toscanini.it':{name:'Marina Agliaudi',email:'marina.agliaudi@toscanini.it'},
@@ -379,6 +414,14 @@ const commercialiData={
 document.addEventListener('DOMContentLoaded',()=>{
     const saved=localStorage.getItem('toscanini_user');
     if(saved){currentUserEmail=saved;currentUser=commercialiData[saved]?.name||saved;showDashboard()}
+    
+    // Test mode
+    document.getElementById('testModeCheckbox').addEventListener('change',e=>{
+        testMode=e.target.checked;
+        document.getElementById('testModeToggle').classList.toggle('active',testMode);
+        showToast(testMode?'Modalità Test ATTIVA - Email a '+TEST_EMAIL:'Modalità Test disattivata',testMode?'info':'success');
+    });
+    
     document.getElementById('commercialeSelect').addEventListener('change',e=>document.getElementById('btnLogin').disabled=!e.target.value);
     document.getElementById('btnLogin').addEventListener('click',login);
     document.getElementById('btnLogout').addEventListener('click',logout);
@@ -392,6 +435,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('btnQuickSave').addEventListener('click',saveForLater);
     document.getElementById('btnReject').addEventListener('click',rejectLead);
     document.getElementById('btnQuickReject').addEventListener('click',rejectLead);
+    document.getElementById('btnContinue').addEventListener('click',goToPhase2);
+    document.getElementById('btnBackToPhase1').addEventListener('click',goToPhase1);
     document.getElementById('btnEditToggle').addEventListener('click',()=>{
         const section=document.getElementById('editSection');
         section.classList.toggle('visible');
@@ -400,20 +445,69 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('btnUpdatePreview').addEventListener('click',updatePreviewFromText);
     document.getElementById('recordingToggle').addEventListener('click',toggleRecording);
     document.querySelectorAll('.btn-acquisition').forEach(btn=>btn.addEventListener('click',()=>setAcquisitionMethod(btn.dataset.method)));
-    document.querySelectorAll('.allegato-item').forEach(item=>{
-        item.addEventListener('click',e=>{
-            if(e.target.type!=='checkbox'){item.querySelector('input').checked=!item.querySelector('input').checked}
-            item.classList.toggle('selected',item.querySelector('input').checked);
-        });
+    
+    // CC Backoffice toggle
+    document.getElementById('ccBackofficeOption').addEventListener('click',e=>{
+        if(e.target.type!=='checkbox'){document.getElementById('ccBackoffice').checked=!document.getElementById('ccBackoffice').checked}
+        document.getElementById('ccBackofficeOption').classList.toggle('selected',document.getElementById('ccBackoffice').checked);
     });
-    // CC Simona toggle
-    document.getElementById('ccSimonaOption').addEventListener('click',e=>{
-        if(e.target.type!=='checkbox'){document.getElementById('ccSimona').checked=!document.getElementById('ccSimona').checked}
-        document.getElementById('ccSimonaOption').classList.toggle('selected',document.getElementById('ccSimona').checked);
-    });
+    
     initDateTime();
     initGeolocation();
 });
+
+function goToPhase1(){
+    document.getElementById('phase1').classList.add('active');
+    document.getElementById('phase2').classList.remove('active');
+}
+
+function goToPhase2(){
+    const d=getFormData();
+    if(!d.nome&&!d.email&&!d.azienda){showToast('Inserisci almeno un dato','error');return}
+    if(!d.commercialeRiferimento){showToast('Seleziona il commerciale di riferimento','error');return}
+    
+    document.getElementById('phase1').classList.remove('active');
+    document.getElementById('phase2').classList.add('active');
+    loadAllegati();
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function loadAllegati(){
+    const container=document.getElementById('allegatiContainer');
+    container.innerHTML='<div class="allegati-loading"><div class="spinner"></div><p>Caricamento allegati...</p></div>';
+    
+    try{
+        const r=await fetch(API_BASE+'/lista-allegati');
+        const files=await r.json();
+        allegatiList=files;
+        
+        if(!files.length){
+            container.innerHTML='<p style="color:var(--text-light);text-align:center;">Nessun allegato disponibile</p>';
+            return;
+        }
+        
+        let html='<div class="allegati-grid">';
+        files.forEach(f=>{
+            html+=`<label class="allegato-item" data-url="${f.url||f.webViewLink||''}">
+                <input type="checkbox" name="allegati" value="${f.id}" data-name="${f.name}" data-url="${f.url||f.webViewLink||''}">
+                <span>${f.name.replace(/\.[^/.]+$/,'')}</span>
+            </label>`;
+        });
+        html+='</div>';
+        container.innerHTML=html;
+        
+        // Add click handlers
+        document.querySelectorAll('#allegatiContainer .allegato-item').forEach(item=>{
+            item.addEventListener('click',e=>{
+                if(e.target.type!=='checkbox'){item.querySelector('input').checked=!item.querySelector('input').checked}
+                item.classList.toggle('selected',item.querySelector('input').checked);
+            });
+        });
+    }catch(e){
+        console.error('Errore caricamento allegati:',e);
+        container.innerHTML='<p style="color:var(--danger);text-align:center;">Errore caricamento allegati</p>';
+    }
+}
 
 function initDateTime(){
     const now=new Date();
@@ -480,9 +574,30 @@ function login(){
     localStorage.setItem('toscanini_user',currentUserEmail);
     showDashboard();
 }
-function logout(){currentUserEmail=null;currentUser=null;localStorage.removeItem('toscanini_user');document.getElementById('loginScreen').style.display='flex';document.getElementById('mainHeader').style.display='none';document.getElementById('dashboard').classList.remove('active');stopCamera();stopRecording()}
-function showDashboard(){document.getElementById('loginScreen').style.display='none';document.getElementById('mainHeader').style.display='block';document.getElementById('dashboard').classList.add('active');document.getElementById('userName').textContent=currentUser;loadLeads()}
-function switchTab(tabId){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tabId));document.querySelectorAll('.tab-content').forEach(tc=>tc.classList.toggle('active',tc.id==='tab'+tabId.charAt(0).toUpperCase()+tabId.slice(1)));if(tabId==='leadList')loadLeads()}
+
+function logout(){
+    currentUserEmail=null;currentUser=null;
+    localStorage.removeItem('toscanini_user');
+    document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('mainHeader').style.display='none';
+    document.getElementById('dashboard').classList.remove('active');
+    stopCamera();stopRecording();
+}
+
+function showDashboard(){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('mainHeader').style.display='block';
+    document.getElementById('dashboard').classList.add('active');
+    document.getElementById('userName').textContent=currentUser;
+    loadLeads();
+}
+
+function switchTab(tabId){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tabId));
+    document.querySelectorAll('.tab-content').forEach(tc=>tc.classList.toggle('active',tc.id==='tab'+tabId.charAt(0).toUpperCase()+tabId.slice(1)));
+    if(tabId==='leadList')loadLeads();
+    if(tabId==='newLead')goToPhase1();
+}
 
 async function startCamera(){
     await stopCamera();
@@ -501,6 +616,7 @@ async function startCamera(){
         document.getElementById('fileInput').click();
     }
 }
+
 async function stopCamera(){
     if(videoStream){
         videoStream.getTracks().forEach(t=>{t.stop();t.enabled=false});
@@ -511,6 +627,7 @@ async function stopCamera(){
     video.style.display='none';
     document.getElementById('btnCapture').disabled=true;
 }
+
 function capturePhoto(){
     const canvas=document.getElementById('canvas'),video=document.getElementById('videoElement');
     canvas.width=video.videoWidth;
@@ -520,6 +637,7 @@ function capturePhoto(){
     showCapturedImage(img);
     processImage(img.split(',')[1]);
 }
+
 function handleFileSelect(e){
     const file=e.target.files[0];
     if(file){
@@ -529,6 +647,7 @@ function handleFileSelect(e){
     }
     e.target.value='';
 }
+
 async function showCapturedImage(src){
     await stopCamera();
     document.getElementById('capturedImage').src=src;
@@ -550,27 +669,26 @@ async function toggleRecording(){
             recordingStartTime=Date.now();
             document.getElementById('recordingToggle').classList.add('active');
             document.getElementById('recordingStatus').classList.add('active');
-            updateRecordingTime();
             recordingTimer=setInterval(updateRecordingTime,1000);
-            // VIBRAZIONE quando parte la registrazione
-            if(navigator.vibrate)navigator.vibrate([200,100,200]);
-            showToast('🔴 Registrazione avviata','info');
-        }catch(e){showToast('Errore microfono','error')}
-    }else{stopRecording()}
+            updateRecordingTime();
+            if(navigator.vibrate)navigator.vibrate(200);
+        }catch(e){showToast('Errore microfono: '+e.message,'error')}
+    }else{
+        stopRecording();
+    }
 }
 
 function stopRecording(){
-    if(mediaRecorder&&isRecording){
+    if(mediaRecorder&&mediaRecorder.state!=='inactive'){
         mediaRecorder.stop();
         mediaRecorder.stream.getTracks().forEach(t=>t.stop());
-        isRecording=false;
-        clearInterval(recordingTimer);
-        document.getElementById('recordingToggle').classList.remove('active');
-        document.getElementById('recordingStatus').classList.remove('active');
-        document.getElementById('recordingStatus').innerHTML='<span>Tocca per registrare</span>';
-        // VIBRAZIONE quando si ferma
-        if(navigator.vibrate)navigator.vibrate(100);
     }
+    isRecording=false;
+    clearInterval(recordingTimer);
+    document.getElementById('recordingToggle').classList.remove('active');
+    document.getElementById('recordingStatus').classList.remove('active');
+    document.getElementById('recordingStatus').innerHTML='<span>Tocca per registrare</span>';
+    if(navigator.vibrate)navigator.vibrate(100);
 }
 
 function updateRecordingTime(){
@@ -593,28 +711,46 @@ async function processAudio(){
 }
 
 async function processImage(base64){
-    showToast('Elaborazione...','info');
+    showToast('Elaborazione biglietto...','info');
     try{
-        const r=await fetch(API_BASE+'/upload-biglietto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:base64,commerciale:currentUser,commercialeEmail:currentUserEmail,dataOra:document.getElementById('fieldDataOra').value,posizione:currentPosition.location,lat:currentPosition.lat,lng:currentPosition.lng,fonte:acquisitionMethod})});
+        const r=await fetch(API_BASE+'/upload-biglietto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+            image:base64,
+            commerciale:currentUser,
+            commercialeEmail:currentUserEmail,
+            dataOra:document.getElementById('fieldDataOra').value,
+            posizione:currentPosition.location,
+            lat:currentPosition.lat,
+            lng:currentPosition.lng,
+            fonte:acquisitionMethod,
+            azienda:document.getElementById('fieldAzienda').value,
+            cognome:document.getElementById('fieldCognome').value
+        })});
         if(!r.ok)throw new Error();
         const d=await r.json();
-        currentLeadData=d;currentRowNumber=d.row_number;
-        ['nome','cognome','email','telefono','azienda','ruolo','indirizzo','nazione'].forEach(f=>{if(d[f])document.getElementById('field'+f.charAt(0).toUpperCase()+f.slice(1)).value=d[f]});
-        // Imposta lingua automaticamente - se non supportata, usa inglese
+        currentLeadData=d;
+        currentRowNumber=d.row_number;
+        
+        ['nome','cognome','email','telefono','azienda','ruolo','indirizzo','nazione'].forEach(f=>{
+            if(d[f])document.getElementById('field'+f.charAt(0).toUpperCase()+f.slice(1)).value=d[f]
+        });
+        
+        // Lingua automatica
         if(d.lingua){
             const supportedLangs=['italiano','english','français','español'];
             const langLower=d.lingua.toLowerCase();
-            if(supportedLangs.includes(langLower)){
-                document.getElementById('fieldLingua').value=langLower;
-            }else{
-                document.getElementById('fieldLingua').value='english';
-            }
+            document.getElementById('fieldLingua').value=supportedLangs.includes(langLower)?langLower:'english';
         }
         showToast('Dati estratti!','success');
     }catch(e){showToast('Errore. Compila manualmente.','error')}
 }
 
 function getFormData(){
+    const selectedAllegati=Array.from(document.querySelectorAll('#allegatiContainer input[name="allegati"]:checked')).map(c=>({
+        id:c.value,
+        name:c.dataset.name,
+        url:c.dataset.url
+    }));
+    
     return{
         nome:document.getElementById('fieldNome').value,
         cognome:document.getElementById('fieldCognome').value,
@@ -628,8 +764,9 @@ function getFormData(){
         tipoCliente:document.getElementById('fieldTipoCliente').value,
         commercialeRiferimento:document.getElementById('fieldCommercialeRif').value,
         noteCommerciale:document.getElementById('fieldNote').value,
-        allegatiSelezionati:Array.from(document.querySelectorAll('input[name="allegati"]:checked')).map(c=>c.value).join(', '),
-        ccSimona:document.getElementById('ccSimona').checked,
+        allegatiSelezionati:selectedAllegati.map(a=>a.name).join(', '),
+        allegatiUrls:selectedAllegati,
+        ccBackoffice:document.getElementById('ccBackoffice')?.checked||false,
         dataOra:document.getElementById('fieldDataOra').value,
         posizione:currentPosition.location,
         lat:currentPosition.lat,
@@ -638,60 +775,28 @@ function getFormData(){
     };
 }
 
-function htmlToPlainText(html){const t=document.createElement('div');t.innerHTML=html;t.querySelectorAll('a').forEach(a=>a.textContent+=` (${a.href})`);return t.textContent||''}
-function plainTextToHtml(text){
-    const commercialeRif=document.getElementById('fieldCommercialeRif').value;
-    const commercialeNome=commercialiData[commercialeRif]?.name||currentUser;
-    let h='<div style="font-family:Arial;max-width:600px;color:#333;">';
-    text.split('\n').filter(l=>l.trim()).forEach(l=>h+='<p>'+l.replace(/\(https?:\/\/[^\)]+\)/g,m=>`<a href="${m.slice(1,-1)}" style="color:#3AAFA9;">${m.slice(1,-1)}</a>`)+'</p>');
-    h+=`<p style="margin-top:20px;"><b>${commercialeNome}</b><br>Industrie Toscanini S.r.l.<br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p>`;
-    h+='<p style="margin-top:10px;">Instagram: <a href="https://www.instagram.com/toscanini_official/" style="color:#3AAFA9;">@toscanini_official</a> | Facebook: <a href="https://www.facebook.com/ToscaniniOfficial/" style="color:#3AAFA9;">@ToscaniniOfficial</a> | LinkedIn: <a href="https://www.linkedin.com/company/toscanini-srl/" style="color:#3AAFA9;">Industrie Toscanini</a></p>';
-    h+='<img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/Toscanini.png" style="max-width:150px;margin-top:20px;display:block;">';
-    h+='<img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/Banner%20M%26O.png" style="max-width:400px;margin-top:15px;display:block;">';
-    h+='</div>';
-    return h;
-}
-function updatePreviewFromText(){currentEmailHtml=plainTextToHtml(document.getElementById('emailEditText').value);document.getElementById('emailPreview').innerHTML=currentEmailHtml;showToast('Anteprima aggiornata','success')}
-
 function generateEmail(){
     const d=getFormData();
     const lang=d.lingua;
     const nome=d.nome;
     const cognome=d.cognome;
-    const allegati=d.allegatiSelezionati.split(', ').filter(Boolean);
     const commercialeRif=d.commercialeRiferimento||currentUserEmail;
     const commercialeNome=commercialiData[commercialeRif]?.name||currentUser;
     
-    const urls={
-        interior_catalog:{n:'Catalogo Interior 2024',u:'https://storage.toscanini.it/toscanini_interior_catalog_2024_sept.pdf'},
-        interior_listino:{n:'Listino Interior 2025',u:'https://storage.toscanini.it/listino-interior-2025-rev2.pdf'},
-        interior_novita:{n:'Novità Interior 2025',u:'https://storage.toscanini.it/listino-interior-2025-new-collection-rev1.pdf'},
-        lingerie_catalog:{n:'Catalogo Lingerie 2021',u:'https://www.toscanini.it/PDF/lingerie.pdf'},
-        hotellerie_catalog:{n:'Catalogo Hotellerie 2022',u:'https://storage.toscanini.it/TOSCANINI_HOTELLERIE2022.pdf'},
-        hotellerie_listino:{n:'Listino Hotellerie 2023',u:'https://storage.toscanini.it/Hotellerie_Jan2023.pdf'},
-        generale_catalog:{n:'Catalogo Generale 2024',u:'https://storage.toscanini.it/Catalogo-Generale-Toscanini_2024.pdf'},
-        inspiration:{n:'Inspiration Book',u:'http://www.toscanini.it/PDF/INSPIRATIONS_06.pdf'},
-        centenario_libro:{n:'Libro Centenario',u:'http://www.toscanini.it/PDF/Libro_Centenario_Toscanini.pdf'},
-        centenario_video_ita:{n:'Video Centenario ITA',u:'http://www.toscanini.it/PDF/Toscanini-100.mp4'},
-        centenario_video_eng:{n:'Video Centenario ENG',u:'https://youtu.be/5Jl6-ZQ3kjw'}
-    };
-    
+    // Build attachment links
     let ah='';
-    if(allegati.length){
-        ah=(lang==='italiano'?'<p><b>Documentazione:</b></p>':lang==='français'?'<p><b>Documentation:</b></p>':lang==='español'?'<p><b>Documentación:</b></p>':'<p><b>Documentation:</b></p>');
-        ah+='<ul style="margin:10px 0 20px 20px;">';
-        allegati.forEach(k=>{if(urls[k])ah+=`<li style="margin:5px 0;"><a href="${urls[k].u}" style="color:#3AAFA9;">${urls[k].n}</a></li>`});
-        ah+='</ul>';
+    if(d.allegatiUrls&&d.allegatiUrls.length){
+        const items=d.allegatiUrls.map(a=>`<li style="margin:5px 0;"><a href="${a.url}" style="color:#3AAFA9;">${a.name.replace(/\.[^/.]+$/,'')}</a></li>`).join('');
+        if(lang==='italiano'){ah=`<p><b>Documentazione:</b></p><ul style="margin:10px 0 20px 20px;">${items}</ul>`}
+        else if(lang==='français'){ah=`<p><b>Documentation:</b></p><ul style="margin:10px 0 20px 20px;">${items}</ul>`}
+        else if(lang==='español'){ah=`<p><b>Documentación:</b></p><ul style="margin:10px 0 20px 20px;">${items}</ul>`}
+        else{ah=`<p><b>Documentation:</b></p><ul style="margin:10px 0 20px 20px;">${items}</ul>`}
     }
     
-    // Social links - sempre inclusi
-    const socialLinks='<p style="margin-top:10px;font-size:12px;">Instagram: <a href="https://www.instagram.com/toscanini_official/" style="color:#3AAFA9;">@toscanini_official</a> | Facebook: <a href="https://www.facebook.com/ToscaniniOfficial/" style="color:#3AAFA9;">@ToscaniniOfficial</a> | LinkedIn: <a href="https://www.linkedin.com/company/toscanini-srl/" style="color:#3AAFA9;">Industrie Toscanini</a></p>';
-    
-    // Logo e Banner
+    const socialLinks='<p style="margin-top:10px;">Instagram: <a href="https://www.instagram.com/toscanini_official/" style="color:#3AAFA9;">@toscanini_official</a> | Facebook: <a href="https://www.facebook.com/ToscaniniOfficial/" style="color:#3AAFA9;">@ToscaniniOfficial</a> | LinkedIn: <a href="https://www.linkedin.com/company/toscanini-srl/" style="color:#3AAFA9;">Industrie Toscanini</a></p>';
     const logoImg='<img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/Toscanini.png" style="max-width:150px;margin-top:20px;display:block;">';
     const bannerImg='<img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/Banner%20M%26O.png" style="max-width:400px;margin-top:15px;display:block;">';
     
-    // Email in 4 lingue
     if(lang==='italiano'){
         currentEmailHtml=`<div style="font-family:Arial;max-width:600px;color:#333;">
             <p>Gentile ${nome} ${cognome},</p>
@@ -726,7 +831,6 @@ function generateEmail(){
             ${socialLinks}${logoImg}${bannerImg}
         </div>`;
     }else{
-        // English (default)
         currentEmailHtml=`<div style="font-family:Arial;max-width:600px;color:#333;">
             <p>Dear ${nome} ${cognome},</p>
             <p>It was a pleasure meeting you at our booth during Maison & Objet and presenting our collections.</p>
@@ -745,48 +849,106 @@ function generateEmail(){
     document.getElementById('emailPreviewBox').scrollIntoView({behavior:'smooth'});
 }
 
+function htmlToPlainText(html){const t=document.createElement('div');t.innerHTML=html;t.querySelectorAll('a').forEach(a=>a.textContent+=` (${a.href})`);return t.textContent||''}
+
+function plainTextToHtml(text){
+    const commercialeRif=document.getElementById('fieldCommercialeRif').value;
+    const commercialeNome=commercialiData[commercialeRif]?.name||currentUser;
+    let h='<div style="font-family:Arial;max-width:600px;color:#333;">';
+    text.split('\n').filter(l=>l.trim()).forEach(l=>h+='<p>'+l.replace(/\(https?:\/\/[^\)]+\)/g,m=>`<a href="${m.slice(1,-1)}" style="color:#3AAFA9;">${m.slice(1,-1)}</a>`)+'</p>');
+    h+=`<p style="margin-top:20px;"><b>${commercialeNome}</b><br>Industrie Toscanini S.r.l.<br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p>`;
+    h+='<img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/Toscanini.png" style="max-width:150px;margin-top:20px;display:block;">';
+    h+='<img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/Banner%20M%26O.png" style="max-width:400px;margin-top:15px;display:block;">';
+    h+='</div>';
+    return h;
+}
+
+function updatePreviewFromText(){
+    currentEmailHtml=plainTextToHtml(document.getElementById('emailEditText').value);
+    document.getElementById('emailPreview').innerHTML=currentEmailHtml;
+    showToast('Anteprima aggiornata','success');
+}
+
 async function saveForLater(){
     const d=getFormData();
     if(!d.nome&&!d.email&&!d.azienda){showToast('Inserisci almeno un dato','error');return}
     showToast('Salvataggio...','info');
     try{
-        const r=await fetch(API_BASE+'/salva-contatto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...d,commerciale:currentUser,commercialeEmail:currentUserEmail,status:'da_approvare'})});
+        const r=await fetch(API_BASE+'/salva-contatto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+            ...d,
+            commerciale:currentUser,
+            commercialeEmail:currentUserEmail,
+            status:'da_approvare'
+        })});
         if(!r.ok)throw new Error();
         const data=await r.json();
         currentRowNumber=data.row_number;
-        showToast('Salvato!','success');
+        showToast('Salvato! Potrai riprenderlo dalla lista.','success');
         resetForm();
-    }catch(e){showToast('Errore','error')}
+    }catch(e){showToast('Errore salvataggio','error')}
 }
 
 async function approveLead(){
     const d=getFormData();
     if(!d.nome&&!d.email){showToast('Inserisci nome o email','error');return}
     if(!d.commercialeRiferimento){showToast('Seleziona il commerciale di riferimento','error');return}
-    showToast('Invio...','info');
+    
+    showToast('Salvataggio e invio...','info');
+    
+    // Determina email destinatario
+    const emailTo=testMode?TEST_EMAIL:d.email;
+    
+    // CC: commerciale mittente + backoffice se selezionato
+    let ccList=[d.commercialeRiferimento]; // CC al commerciale che invia
+    if(d.ccBackoffice)ccList.push('simona.giuppone@toscanini.it');
+    
     try{
+        // Prima salva se non esiste
+        if(!currentRowNumber){
+            const saveResp=await fetch(API_BASE+'/salva-contatto',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+                ...d,
+                commerciale:currentUser,
+                commercialeEmail:currentUserEmail,
+                status:'da_approvare'
+            })});
+            if(saveResp.ok){
+                const saveData=await saveResp.json();
+                currentRowNumber=saveData.row_number;
+            }
+        }
+        
+        // Poi approva
         const r=await fetch(API_BASE+'/approva',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
             ...d,
             row_number:currentRowNumber,
             commerciale:currentUser,
             commercialeEmail:currentUserEmail,
             emailGenerata:currentEmailHtml,
+            emailTo:emailTo,
+            emailCc:ccList.join(', '),
+            emailFrom:d.commercialeRiferimento,
             status:'approvato'
         })});
+        
         if(!r.ok)throw new Error();
-        showToast('Approvato! Email inviata.','success');
+        showToast(testMode?'Email inviata a '+TEST_EMAIL+' (test)':'Approvato! Email inviata.','success');
         resetForm();
-    }catch(e){showToast('Errore','error')}
+    }catch(e){
+        console.error(e);
+        showToast('Errore invio','error');
+    }
 }
 
 async function rejectLead(){
-    if(!currentRowNumber){resetForm();return}
-    const m=prompt('Motivo (opzionale):');
-    try{
-        await fetch(API_BASE+'/scarta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({row_number:currentRowNumber,motivoScarto:m||''})});
-        showToast('Scartato','success');
-        resetForm();
-    }catch(e){showToast('Errore','error')}
+    if(!confirm('Sei sicuro di voler scartare questo contatto?'))return;
+    
+    if(currentRowNumber){
+        try{
+            await fetch(API_BASE+'/scarta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({row_number:currentRowNumber,motivoScarto:'Scartato manualmente'})});
+        }catch(e){}
+    }
+    showToast('Contatto scartato','success');
+    resetForm();
 }
 
 function resetForm(){
@@ -794,14 +956,17 @@ function resetForm(){
     document.getElementById('fieldLingua').value='italiano';
     document.getElementById('fieldTipoCliente').value='';
     document.getElementById('fieldCommercialeRif').value='';
-    document.getElementById('ccSimona').checked=false;
-    document.getElementById('ccSimonaOption').classList.remove('selected');
-    document.querySelectorAll('input[name="allegati"]').forEach(c=>{c.checked=false;c.closest('.allegato-item').classList.remove('selected')});
+    if(document.getElementById('ccBackoffice')){
+        document.getElementById('ccBackoffice').checked=false;
+        document.getElementById('ccBackofficeOption').classList.remove('selected');
+    }
+    document.querySelectorAll('#allegatiContainer input[name="allegati"]').forEach(c=>{c.checked=false;c.closest('.allegato-item')?.classList.remove('selected')});
     document.getElementById('emailPreviewBox').style.display='none';
     document.getElementById('capturedImage').style.display='none';
     document.getElementById('cameraPlaceholder').style.display='block';
     document.getElementById('btnStartCamera').textContent='📷 Avvia Camera';
     currentLeadData=null;currentRowNumber=null;currentEmailHtml='';
+    goToPhase1();
     initDateTime();
     window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -813,14 +978,75 @@ async function loadLeads(){
         const r=await fetch(API_BASE+'/leads');
         const leads=await r.json();
         if(!leads.length){container.innerHTML='<div class="empty-state"><div class="icon">📭</div><p>Nessun contatto da approvare</p></div>';return}
-        container.innerHTML=`<table class="leads-table"><thead><tr><th>Nome</th><th>Azienda</th><th>Tipo</th><th>Stato</th><th>Azioni</th></tr></thead><tbody>${leads.map(l=>`<tr><td class="lead-name">${l.nome||''} ${l.cognome||''}</td><td class="lead-company">${l.azienda||'-'}</td><td>${l.tipoCliente||'-'}</td><td><span class="lead-status ${l.status==='approvato'?'approved':l.status==='scartato'?'rejected':'pending'}">${l.status==='approvato'?'Approvato':l.status==='scartato'?'Scartato':'Da Approvare'}</span></td><td class="lead-actions"><button class="btn-icon approve" onclick="quickApprove(${l.row_number})">✓</button><button class="btn-icon reject" onclick="quickReject(${l.row_number})">✕</button></td></tr>`).join('')}</tbody></table>`;
+        container.innerHTML=`<table class="leads-table">
+            <thead><tr><th>Nome</th><th>Azienda</th><th>Tipo</th><th>Stato</th><th>Azioni</th></tr></thead>
+            <tbody>${leads.map(l=>`<tr>
+                <td class="lead-name">${l.nome||''} ${l.cognome||''}</td>
+                <td class="lead-company">${l.azienda||'-'}</td>
+                <td>${l.tipoCliente||'-'}</td>
+                <td><span class="lead-status ${l.status==='approvato'?'approved':l.status==='scartato'?'rejected':'pending'}">${l.status==='approvato'?'Approvato':l.status==='scartato'?'Scartato':'Da Approvare'}</span></td>
+                <td class="lead-actions">
+                    <button class="btn-icon edit" onclick="editLead(${JSON.stringify(l).replace(/"/g,'&quot;')})" title="Modifica">✏️</button>
+                    <button class="btn-icon approve" onclick="quickApprove('${l.email}')" title="Approva">✓</button>
+                    <button class="btn-icon reject" onclick="quickReject('${l.email}')" title="Scarta">✕</button>
+                </td>
+            </tr>`).join('')}</tbody>
+        </table>`;
     }catch(e){container.innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>Errore caricamento</p></div>'}
 }
 
-async function quickApprove(row){if(!confirm('Approvare e inviare email?'))return;try{await fetch(API_BASE+'/approva',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({row_number:row,commerciale:currentUser,commercialeEmail:currentUserEmail})});showToast('Approvato!','success');loadLeads()}catch(e){showToast('Errore','error')}}
-async function quickReject(row){const m=prompt('Motivo:');try{await fetch(API_BASE+'/scarta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({row_number:row,motivoScarto:m||''})});showToast('Scartato','success');loadLeads()}catch(e){showToast('Errore','error')}}
+function editLead(lead){
+    // Popola il form con i dati del lead
+    document.getElementById('fieldNome').value=lead.nome||'';
+    document.getElementById('fieldCognome').value=lead.cognome||'';
+    document.getElementById('fieldEmail').value=lead.email||'';
+    document.getElementById('fieldTelefono').value=lead.telefono||'';
+    document.getElementById('fieldAzienda').value=lead.azienda||'';
+    document.getElementById('fieldRuolo').value=lead.ruolo||'';
+    document.getElementById('fieldIndirizzo').value=lead.indirizzo||'';
+    document.getElementById('fieldNazione').value=lead.nazione||'';
+    document.getElementById('fieldLingua').value=lead.lingua||'italiano';
+    document.getElementById('fieldTipoCliente').value=lead.tipoCliente||'';
+    document.getElementById('fieldCommercialeRif').value=lead.commercialeRiferimento||lead.commercialeEmail||'';
+    document.getElementById('fieldNote').value=lead.noteCommerciale||'';
+    
+    currentRowNumber=lead.row_number;
+    currentLeadData=lead;
+    
+    // Passa al tab nuovo contatto
+    switchTab('newLead');
+    showToast('Contatto caricato per modifica','info');
+}
 
-function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3000)}
+async function quickApprove(email){
+    if(!confirm('Approvare e inviare email?'))return;
+    try{
+        await fetch(API_BASE+'/approva',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+            email:email,
+            commerciale:currentUser,
+            commercialeEmail:currentUserEmail,
+            status:'approvato'
+        })});
+        showToast('Approvato!','success');
+        loadLeads();
+    }catch(e){showToast('Errore','error')}
+}
+
+async function quickReject(email){
+    if(!confirm('Sei sicuro di voler scartare questo contatto?'))return;
+    try{
+        await fetch(API_BASE+'/scarta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,motivoScarto:'Scartato da lista'})});
+        showToast('Scartato','success');
+        loadLeads();
+    }catch(e){showToast('Errore','error')}
+}
+
+function showToast(msg,type='info'){
+    const t=document.getElementById('toast');
+    t.textContent=msg;
+    t.className='toast '+type+' show';
+    setTimeout(()=>t.classList.remove('show'),3500);
+}
 </script>
 </body>
 </html>
