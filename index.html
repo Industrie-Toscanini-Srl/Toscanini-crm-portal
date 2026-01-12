@@ -755,7 +755,7 @@ function getFormData(){
         nome:document.getElementById('fieldNome').value,
         cognome:document.getElementById('fieldCognome').value,
         email:document.getElementById('fieldEmail').value,
-        telefono:document.getElementById('fieldTelefono').value,
+        telefono:(document.getElementById('fieldTelefono').value.startsWith('+') ? "'" : "") + document.getElementById('fieldTelefono').value,
         azienda:document.getElementById('fieldAzienda').value,
         ruolo:document.getElementById('fieldRuolo').value,
         indirizzo:document.getElementById('fieldIndirizzo').value,
