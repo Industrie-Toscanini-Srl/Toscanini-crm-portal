@@ -883,8 +883,6 @@ function plainTextToHtml(text){
     let h='<div style="font-family:Arial;max-width:600px;color:#333;">';
     text.split('\n').filter(l=>l.trim()).forEach(l=>h+='<p>'+l.replace(/\(https?:\/\/[^\)]+\)/g,m=>`<a href="${m.slice(1,-1)}" style="color:#3AAFA9;">${m.slice(1,-1)}</a>`)+'</p>');
     h+=`<p style="margin-top:20px;"><b>${commercialeNome}</b><br>Industrie Toscanini S.r.l.<br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p>`;
-    h+='<img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/Toscanini.png" style="max-width:150px;margin-top:20px;display:block;">';
-    h+='<img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/Banner%20M%26O.png" style="max-width:400px;margin-top:15px;display:block;">';
     h+='</div>';
     return h;
 }
