@@ -936,7 +936,7 @@ async function approveLead(){
                 ...d,
                 commerciale:currentUser,
                 commercialeEmail:currentUserEmail,
-                status:'da_approvare'
+                status:'APPROVATO'
             })});
             if(saveResp.ok){
                 const saveData=await saveResp.json();
