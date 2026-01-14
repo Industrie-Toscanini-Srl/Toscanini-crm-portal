@@ -808,63 +808,66 @@ function generateEmail(){
     const commercialeNome=commercialiData[commercialeRif]?.name||currentUser;
     
     // Build attachment links
-    let ah='';
+    let allegatiHtml='';
     if(d.allegatiUrls&&d.allegatiUrls.length){
-        const items=d.allegatiUrls.map(a=>`<li style="margin:5px 0;"><a href="${a.url}" style="color:#3AAFA9;">${a.name.replace(/\.[^/.]+$/,'')}</a></li>`).join('');
-        if(lang==='italiano'){ah=`<p><b>Documentazione:</b></p><ul style="margin:10px 0 20px 20px;">${items}</ul>`}
-        else if(lang==='français'){ah=`<p><b>Documentation:</b></p><ul style="margin:10px 0 20px 20px;">${items}</ul>`}
-        else if(lang==='español'){ah=`<p><b>Documentación:</b></p><ul style="margin:10px 0 20px 20px;">${items}</ul>`}
-        else{ah=`<p><b>Documentation:</b></p><ul style="margin:10px 0 20px 20px;">${items}</ul>`}
+        const items=d.allegatiUrls.map(a=>`<li style="margin:8px 0;"><a href="${a.url}" style="color:#3AAFA9;text-decoration:none;">📎 ${a.name.replace(/\.[^/.]+$/,'')}</a></li>`).join('');
+        allegatiHtml=`<ul style="margin:15px 0 20px 20px;padding:0;list-style:none;">${items}</ul>`;
     }
-    const socialLinks='<p style="margin-top:15px;"><a href="https://www.instagram.com/toscanini_official/" style="margin-right:15px;"><img src="https://cdn-icons-png.flaticon.com/24/174/174855.png" alt="Instagram"></a><a href="https://www.facebook.com/ToscaniniOfficial/" style="margin-right:15px;"><img src="https://cdn-icons-png.flaticon.com/24/174/174848.png" alt="Facebook"></a><a href="https://www.linkedin.com/company/toscanini-srl/"><img src="https://cdn-icons-png.flaticon.com/24/174/174857.png" alt="LinkedIn"></a></p>';
-    const logoImg='';
-    const bannerImg='<img src="https://raw.githubusercontent.com/Industrie-Toscanini-Srl/Toscanini-crm-portal/main/Banner%20M%26O.png" style="max-width:400px;margin-top:15px;display:block;">';
+    
+    // Social links con emoji
+    const instagramLink='<a href="https://www.instagram.com/toscanini_official/" style="color:#3AAFA9;text-decoration:none;">👉 @toscanini_official</a>';
     
     if(lang==='italiano'){
-        currentEmailHtml=`<div style="font-family:Arial;max-width:600px;color:#333;">
+        currentEmailHtml=`<div style="font-family:Arial,sans-serif;max-width:600px;color:#333;line-height:1.6;">
             <p>Gentile ${nome} ${cognome},</p>
-            <p>È stato un piacere incontrarLa al nostro stand durante Maison & Objet e presentarLe le nostre collezioni.</p>
-            <p>Come discusso, Le invio la documentazione richiesta:</p>
-            ${ah}
-            <p>Rimango a disposizione per qualsiasi informazione.</p>
-            <p>Cordiali saluti,</p>
-            <p><b>${commercialeNome}</b><br>Industrie Toscanini S.r.l.<br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p>
-            ${socialLinks}${logoImg}${bannerImg}
+            <p>La ringrazio per aver visitato il nostro stand a <strong>Maison & Objet – Parigi</strong>. È stato un piacere incontrarLa e presentarLe le nostre collezioni.</p>
+            <p>Come da accordi, Le invio di seguito i link ai materiali di approfondimento:</p>
+            ${allegatiHtml}
+            <p>Rimaniamo a Sua completa disposizione per qualsiasi ulteriore informazione o necessità di supporto sui Suoi progetti.</p>
+            <p>La invito inoltre a seguirci sulla nostra pagina Instagram per restare aggiornato sulle novità e ispirazioni dal mondo Toscanini:<br>${instagramLink}</p>
+            <p>La ringrazio ancora per il tempo dedicatoci e spero avremo presto occasione di collaborare.</p>
+            <p style="margin-top:25px;">Cordiali saluti,<br><strong>${commercialeNome}</strong><br>Industrie Toscanini S.r.l.<br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p>
         </div>`;
     }else if(lang==='français'){
-        currentEmailHtml=`<div style="font-family:Arial;max-width:600px;color:#333;">
+        currentEmailHtml=`<div style="font-family:Arial,sans-serif;max-width:600px;color:#333;line-height:1.6;">
             <p>Cher/Chère ${nome} ${cognome},</p>
-            <p>Ce fut un plaisir de vous rencontrer sur notre stand lors de Maison & Objet et de vous présenter nos collections.</p>
-            <p>Comme convenu, je vous envoie la documentation demandée:</p>
-            ${ah}
-            <p>Je reste à votre disposition pour toute information.</p>
-            <p>Cordialement,</p>
-            <p><b>${commercialeNome}</b><br>Industrie Toscanini S.r.l.<br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p>
-            ${socialLinks}${logoImg}${bannerImg}
+            <p>Je vous remercie d'avoir visité notre stand à <strong>Maison & Objet – Paris</strong>. Ce fut un plaisir de vous rencontrer et de vous présenter nos collections.</p>
+            <p>Comme convenu, veuillez trouver ci-dessous les liens vers nos documents:</p>
+            ${allegatiHtml}
+            <p>Nous restons à votre entière disposition pour toute information complémentaire ou besoin d'accompagnement sur vos projets.</p>
+            <p>Je vous invite également à nous suivre sur notre page Instagram pour rester informé des nouveautés et inspirations du monde Toscanini:<br>${instagramLink}</p>
+            <p>Je vous remercie encore pour le temps que vous nous avez accordé et j'espère que nous aurons bientôt l'occasion de collaborer.</p>
+            <p style="margin-top:25px;">Cordialement,<br><strong>${commercialeNome}</strong><br>Industrie Toscanini S.r.l.<br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p>
         </div>`;
     }else if(lang==='español'){
-        currentEmailHtml=`<div style="font-family:Arial;max-width:600px;color:#333;">
+        currentEmailHtml=`<div style="font-family:Arial,sans-serif;max-width:600px;color:#333;line-height:1.6;">
             <p>Estimado/a ${nome} ${cognome},</p>
-            <p>Fue un placer conocerle en nuestro stand durante Maison & Objet y presentarle nuestras colecciones.</p>
-            <p>Como acordamos, le envío la documentación solicitada:</p>
-            ${ah}
-            <p>Quedo a su disposición para cualquier información.</p>
-            <p>Saludos cordiales,</p>
-            <p><b>${commercialeNome}</b><br>Industrie Toscanini S.r.l.<br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p>
-            ${socialLinks}${logoImg}${bannerImg}
+            <p>Le agradezco por haber visitado nuestro stand en <strong>Maison & Objet – París</strong>. Fue un placer conocerle y presentarle nuestras colecciones.</p>
+            <p>Como acordamos, le envío a continuación los enlaces a los materiales:</p>
+            ${allegatiHtml}
+            <p>Quedamos a su entera disposición para cualquier información adicional o necesidad de apoyo en sus proyectos.</p>
+            <p>Le invito también a seguirnos en nuestra página de Instagram para estar al día de las novedades e inspiraciones del mundo Toscanini:<br>${instagramLink}</p>
+            <p>Le agradezco nuevamente por el tiempo dedicado y espero que pronto tengamos la oportunidad de colaborar.</p>
+            <p style="margin-top:25px;">Saludos cordiales,<br><strong>${commercialeNome}</strong><br>Industrie Toscanini S.r.l.<br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p>
         </div>`;
     }else{
-        currentEmailHtml=`<div style="font-family:Arial;max-width:600px;color:#333;">
+        currentEmailHtml=`<div style="font-family:Arial,sans-serif;max-width:600px;color:#333;line-height:1.6;">
             <p>Dear ${nome} ${cognome},</p>
-            <p>It was a pleasure meeting you at our booth during Maison & Objet and presenting our collections.</p>
-            <p>As discussed, please find the requested documentation:</p>
-            ${ah}
-            <p>Please don't hesitate to contact me for any information.</p>
-            <p>Best regards,</p>
-            <p><b>${commercialeNome}</b><br>Industrie Toscanini S.r.l.<br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p>
-            ${socialLinks}${logoImg}${bannerImg}
+            <p>Thank you for visiting our stand at <strong>Maison & Objet – Paris</strong>. It was a pleasure meeting you and presenting our collections.</p>
+            <p>As agreed, please find below the links to our materials:</p>
+            ${allegatiHtml}
+            <p>We remain at your complete disposal for any further information or support needed on your projects.</p>
+            <p>I also invite you to follow us on our Instagram page to stay updated on news and inspirations from the Toscanini world:<br>${instagramLink}</p>
+            <p>Thank you again for your time and I hope we will have the opportunity to collaborate soon.</p>
+            <p style="margin-top:25px;">Best regards,<br><strong>${commercialeNome}</strong><br>Industrie Toscanini S.r.l.<br><a href="https://www.toscanini.it" style="color:#3AAFA9;">www.toscanini.it</a></p>
         </div>`;
     }
+    
+    document.getElementById('emailPreview').innerHTML=currentEmailHtml;
+    document.getElementById('emailEditText').value=htmlToPlainText(currentEmailHtml);
+    document.getElementById('emailPreviewBox').style.display='block';
+    document.getElementById('emailPreviewBox').scrollIntoView({behavior:'smooth'});
+}
     
     document.getElementById('emailPreview').innerHTML=currentEmailHtml;
     document.getElementById('emailEditText').value=htmlToPlainText(currentEmailHtml);
