@@ -868,12 +868,6 @@ function generateEmail(){
     document.getElementById('emailPreviewBox').style.display='block';
     document.getElementById('emailPreviewBox').scrollIntoView({behavior:'smooth'});
 }
-    
-    document.getElementById('emailPreview').innerHTML=currentEmailHtml;
-    document.getElementById('emailEditText').value=htmlToPlainText(currentEmailHtml);
-    document.getElementById('emailPreviewBox').style.display='block';
-    document.getElementById('emailPreviewBox').scrollIntoView({behavior:'smooth'});
-}
 
 function htmlToPlainText(html){const t=document.createElement('div');t.innerHTML=html;t.querySelectorAll('a').forEach(a=>a.textContent+=` (${a.href})`);return t.textContent||''}
 
